@@ -1,6 +1,6 @@
 #!/bin/bash
 
-EXELIST=( blastp blast_formatter $CAPS datamash extractalign fastafetch \
+EXELIST=( blastp blast_formatter $CAPS datamash fastafetch \
           fastaindex Gblocks mafft makeblastdb muscle parallel phyml \
 	  prank seqkit squizz treebest )
 
