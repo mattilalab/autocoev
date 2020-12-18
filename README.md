@@ -1,6 +1,6 @@
 AutoCoEV
 
-# AutoCoEv – a high-throughput _in silico_ pipeline for revealing novel protein-protein interactions
+# AutoCoEv – a high-throughput _in silico_ pipeline for predicting novel protein-protein interactions
 
 _Petar B. Petrov<sup>1,2*</sup>, Vid Šuštar1<sup>1</sup>, Luqman O. Awoniyi<sup>1,2</sup>, Martti Tolvanen<sup>3</sup>, and Pieta K. Mattila<sup>1,2*</sup>_
 
