@@ -1,0 +1,13 @@
+2020-10-23
+Update the manual.
++--------------------------+
+
+2020-10-22
+Added the option to process a list of defined protein pairs.
+Added the option to use external trees with CAPS (use with care).
+Misc cleanups.
++--------------------------+
+
+2020-10-03
+Upload to GitHub
++--------------------------+

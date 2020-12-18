@@ -1,0 +1,11 @@
+1) Add statistical analyses to AutoCoEv results.
+2) Add better post-processing of the results:
+   - MSA column colouring
+   - Trimmed trees with species names, instead of taxid
+3) At the moment, we offer a virtual machine image with Slackware 14.2
+   and all necessary software preinstalled, upon request.
+   We are planning to create Docker or Singularity containers for
+   AutoCoEv, as well.
+4) Make downloading OrthoDB flexible for the database version. At the
+   moment, the script downloads 10v1
+   
