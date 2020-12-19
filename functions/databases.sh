@@ -9,10 +9,10 @@ download_db(){
   local DBDW="${1}"
   mkdir -p $DTB
   cd $DTB
-  if [ -z "${DBDW}.tab.gz" ]; then
+  if [ ! -f ${DBDW}.tab.gz ] ; then
     echo -e "Downloading ${DBDW}.tab.gz in \e[96m$DTB\e[39m"
     wget -c "https://$ORTHODBVER.orthodb.org/download/${DBDW}.tab.gz"
-  elif [ -f "${DBDW}.tab.gz" ]; then
+  elif [ -s "${DBDW}.tab.gz" ]; then
     echo -e "${DBDW}.tab.gz is already in $DTB! Skipping..."
   else
     echo -e "Check your settings!"
@@ -25,14 +25,12 @@ db_exist(){
   mkdir -p $DTB
   cd $DTB
   for d in ${DBLIST[@]} ; do
-    if [ -z "$d.tab.gz" ]; then
-      echo -e "\e[91mMISSING\e[39m] $d.tab.gz not found! Download first!"
-      return 1
+    if [ ! -f "$d.tab.gz" ]; then
+      echo -e "[\e[91mMISSING\e[39m] $d.tab.gz not found! Download first!"
     elif [ -f "$d.tab.gz" ]; then
-      echo -e "[\e[92mFOUND\e[39m] $DTB/$d.tar.gz"
+      echo -e "[\e[92mPRESENT\e[39m] $DTB/$d.tar.gz"
     else
       echo -e "Check your settings!"
-      return 1
     fi
   done
 }
@@ -43,13 +41,19 @@ md5sum_check(){
   local DB5S="${2}"
   mkdir -p $DTB
   cd $DTB
-  m5s=$(md5sum $DBCH.tab.gz | awk '{print $1}' )
-  if [ "$m5s" = "$DB5S" ]; then
-    echo -e "[\e[92mMATCH\e[39m] $m5s = $DB5S $DBCH.tab.gz"
-  elif [ "$m5s" != "$DB5S" ]; then
-    echo -e "\e[91mWRONG\e[39m] $m5s != $DB5S $DBCH.tab.gz"
+  if [ -f "$DBCH.tab.gz" ]; then
+    m5s=$(md5sum $DBCH.tab.gz | awk '{print $1}' )
+    if [ "$m5s" = "$DB5S" ]; then
+      echo -e "[\e[92mMATCH\e[39m] $m5s = $DB5S $DBCH.tab.gz"
+    elif [ "$m5s" != "$DB5S" ]; then
+      echo -e "[\e[91mWRONG\e[39m] $m5s != $DB5S $DBCH.tab.gz"
+    else
+      echo -e "Check your settings"
+    fi
+  elif [ ! -f "$DBCH.tab.gz" ]; then
+    echo -e "[\e[91mMISSING\e[39m] $DBCH.tab.gz not found! Download first!"
   else
-    echo -e "Check your settings"
+    echo -e "Check your settings!"
   fi
 }
 
@@ -58,14 +62,14 @@ extract_db(){
   local DBEX="${1}"
   mkdir -p $DTB
   cd $DTB
-  if [ -z "${DBEX}.tab" ]; then
+  if [ ! -s "${DBEX}.tab" ]; then
     echo -e "Extracting ${DBEX}.tab.gz in \e[96m$DTB\e[39m"
     gunzip -v -c ${DBEX}.tab.gz > ${DBEX}.tab
-    echo -e "Extracted ${DBEX}.tab! You may delete the archive."
-  elif [ -f "${DBEX}.tab" ]; then
-    echo -e "${DBEX}.tab is already in $DTB! Skipping..."
-  elif [ -z "${DBEX}.tab.gz" ]; then
-    echo -e "Archive ${DBEX}.tab.gz not found! Download first!"
+    echo -e "[\e[92mEXTRACT\e[39m] Extracted ${DBEX}.tab! You may delete the archive."
+  elif [ -s "${DBEX}.tab" ]; then
+    echo -e "[\e[93mPRESENT\e[39m] ${DBEX}.tab is already in $DTB! Skipping..."
+  elif [ ! -s "${DBEX}.tab.gz" ]; then
+    echo -e "[\e[91mMISSING\e[39m] Archive ${DBEX}.tab.gz not found! Download first!"
   else
     echo -e "Check your setings!"
   fi
@@ -75,16 +79,16 @@ extract_db(){
 index_all_fasta(){
   mkdir -p $DTB
   cd $DTB
-  if [ -z "$ALLFASTA.tab.index" ]; then
+  if [ ! -s "$ALLFASTA.tab.index" ]; then
     echo -e "Indexing $ALLFASTA.tab in \e[96m$DTB\e[39m"
     fastaindex \
       $ALLFASTA.tab \
       $ALLFASTA.tab.index
-    echo -e "Indexing $ALLFASTA.tab complete!"
-  elif [ -f "$ALLFASTA.tab.index" ]; then
-    echo -e "Indexed $ALLFASTA.tab already present in $DTB! Skipping..."
-  elif [ -z "$ALLFASTA.tab" ]; then
-    echo -e "No $ALLFASTA.tab found in $DTB! Download/extract first!"
+    echo -e "[\e[92mINDEXED\e[39m] Indexing $ALLFASTA.tab complete!"
+  elif [ -s "$ALLFASTA.tab.index" ]; then
+    echo -e "[\e[93mPRESENT\e[39m] Indexed $ALLFASTA.tab already present in $DTB! Skipping..."
+  elif [ ! -f "$ALLFASTA.tab" ]; then
+    echo -e "[\e[91mMISSING\e[39m] No $ALLFASTA.tab found in $DTB! Download/extract first!"
   else
     echo -e "Check your settings!"
   fi
