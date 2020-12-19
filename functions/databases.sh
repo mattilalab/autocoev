@@ -64,15 +64,15 @@ index_all_fasta(){
   mkdir -p $DTB
   cd $DTB
   if [ -s "$ALLFASTA.tab.index" ]; then
+    echo -e "[\e[93mPRESENT\e[39m] Indexed $ALLFASTA.tab already present in $DTB! Skipping..."
+  elif [ ! -s "$ALLFASTA.tab" ]; then
+    echo -e "[\e[91mMISSING\e[39m] No $ALLFASTA.tab found in $DTB! Download/extract first!"
+  elif [ -s "$ALLFASTA.tab" ]; then
     echo -e "Indexing $ALLFASTA.tab in \e[96m$DTB\e[39m"
     fastaindex \
       $ALLFASTA.tab \
       $ALLFASTA.tab.index
     echo -e "[\e[92mINDEXED\e[39m] Indexing $ALLFASTA.tab complete!"
-  elif [ -s "$ALLFASTA.tab.index" ]; then
-    echo -e "[\e[93mPRESENT\e[39m] Indexed $ALLFASTA.tab already present in $DTB! Skipping..."
-  elif [ ! -s "$ALLFASTA.tab" ]; then
-    echo -e "[\e[91mMISSING\e[39m] No $ALLFASTA.tab found in $DTB! Download/extract first!"
   else
     echo -e "Check your settings!"
   fi
