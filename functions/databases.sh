@@ -62,7 +62,7 @@ extract_db(){
   local DBEX="${1}"
   mkdir -p $DTB
   cd $DTB
-  if [ ! -s "${DBEX}.tab" ]; then
+  if [ -s "${DBEX}.tab" ]; then
     echo -e "Extracting ${DBEX}.tab.gz in \e[96m$DTB\e[39m"
     gunzip -v -c ${DBEX}.tab.gz > ${DBEX}.tab
     echo -e "[\e[92mEXTRACT\e[39m] Extracted ${DBEX}.tab! You may delete the archive."
@@ -79,7 +79,7 @@ extract_db(){
 index_all_fasta(){
   mkdir -p $DTB
   cd $DTB
-  if [ ! -s "$ALLFASTA.tab.index" ]; then
+  if [ -s "$ALLFASTA.tab.index" ]; then
     echo -e "Indexing $ALLFASTA.tab in \e[96m$DTB\e[39m"
     fastaindex \
       $ALLFASTA.tab \
@@ -87,7 +87,7 @@ index_all_fasta(){
     echo -e "[\e[92mINDEXED\e[39m] Indexing $ALLFASTA.tab complete!"
   elif [ -s "$ALLFASTA.tab.index" ]; then
     echo -e "[\e[93mPRESENT\e[39m] Indexed $ALLFASTA.tab already present in $DTB! Skipping..."
-  elif [ ! -f "$ALLFASTA.tab" ]; then
+  elif [ ! -s "$ALLFASTA.tab" ]; then
     echo -e "[\e[91mMISSING\e[39m] No $ALLFASTA.tab found in $DTB! Download/extract first!"
   else
     echo -e "Check your settings!"
@@ -101,14 +101,14 @@ trim_db(){
   local SBTR="${3}"
   mkdir -p $DTB
   cd $DTB
-  if [ -z "${DBTR}.${SBTR}.tab" ]; then
+  if [ -s "${DBTR}.${SBTR}.tab" ]; then
+    echo -e "[\e[93mPRESENT\e[39m] ${DBTR}.${SBTR}.tab is already in $DTB! Skipping..."
+  elif [ ! -s "${DBTR}.tab" ]; then
+    echo -e "[\e[91mMISSING\e[39m] No ${DBTR}.tab found in $DTB! Download/extract first!"
+  elif [ -s "${DBTR}.${SBTR}.tab" ]; then
     echo -e "Trimming ${DBTR}.tab in \e[96m$DTB\e[39m"
     grep "$IDTR" ${DBTR}.${SBTR}.tab > ${DBTR}.${SBTR}.tab
-    echo -e "Trimmed ${DBTR}.tab for ${SBTR}!"
-  elif [ -f "${DBTR}.${SBTR}.tab" ]; then
-    echo -e "${DBTR}.${SBTR}.tab is already in $DTB! Skipping..."
-  elif [ -z "${DBTR}.tab" ]; then
-    echo -e "No ${DBTR}.tab found in $DTB! Download/extract first!"
+    echo -e "[\e[92mTRIMMED\e[39m] Trimmed ${DBTR}.tab for ${SBTR}!"
   else
     echo -e "Check your setings!"
   fi
