@@ -8,7 +8,7 @@ check_bin(){
   for e in ${EXELIST[@]} ; do
     BINPATH=$(which $e)
     if [ -x "$BINPATH" ] ; then
-      echo -e "[\e[92mFOUND\e[39m] $BINPATH"
+      echo -e "[\e[92mIN PATH\e[39m] $BINPATH"
     else
       echo -e "[\e[91mMISSING\e[39m] $e not found!"
     fi
