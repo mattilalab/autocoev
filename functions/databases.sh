@@ -9,30 +9,14 @@ download_db(){
   local DBDW="${1}"
   mkdir -p $DTB
   cd $DTB
-  if [ ! -f ${DBDW}.tab.gz ] ; then
+  if [ -s "${DBDW}.tab.gz" ]; then
+    echo -e "[\e[93mPRESENT\e[39m] ${DBDW}.tab.gz is already in $DTB! Skipping..."
+  elif [ ! -f ${DBDW}.tab.gz ] ; then
     echo -e "Downloading ${DBDW}.tab.gz in \e[96m$DTB\e[39m"
     wget -c "https://$ORTHODBVER.orthodb.org/download/${DBDW}.tab.gz"
-  elif [ -s "${DBDW}.tab.gz" ]; then
-    echo -e "${DBDW}.tab.gz is already in $DTB! Skipping..."
   else
-    echo -e "Check your settings!"
+    echo -e "[\e[91mERROR\e[39m] Check $DTB and your settings!"
   fi  
-}
-
-# Check if databases are downloaded
-db_exist(){
-  DBLIST=( "${GENEXREFALL}" "${OG2GENESALL}" "${ALLFASTA}" )
-  mkdir -p $DTB
-  cd $DTB
-  for d in ${DBLIST[@]} ; do
-    if [ ! -f "$d.tab.gz" ]; then
-      echo -e "[\e[91mMISSING\e[39m] $d.tab.gz not found! Download first!"
-    elif [ -f "$d.tab.gz" ]; then
-      echo -e "[\e[92mPRESENT\e[39m] $DTB/$d.tar.gz"
-    else
-      echo -e "Check your settings!"
-    fi
-  done
 }
 
 # Check MD5SUMs of databases
@@ -53,7 +37,7 @@ md5sum_check(){
   elif [ ! -f "$DBCH.tab.gz" ]; then
     echo -e "[\e[91mMISSING\e[39m] $DBCH.tab.gz not found! Download first!"
   else
-    echo -e "Check your settings!"
+    echo -e "[\e[91mERROR\e[39m] Check your settings!"
   fi
 }
 
@@ -63,15 +47,15 @@ extract_db(){
   mkdir -p $DTB
   cd $DTB
   if [ -s "${DBEX}.tab" ]; then
-    echo -e "Extracting ${DBEX}.tab.gz in \e[96m$DTB\e[39m"
-    gunzip -v -c ${DBEX}.tab.gz > ${DBEX}.tab
-    echo -e "[\e[92mEXTRACT\e[39m] Extracted ${DBEX}.tab! You may delete the archive."
-  elif [ -s "${DBEX}.tab" ]; then
     echo -e "[\e[93mPRESENT\e[39m] ${DBEX}.tab is already in $DTB! Skipping..."
   elif [ ! -s "${DBEX}.tab.gz" ]; then
     echo -e "[\e[91mMISSING\e[39m] Archive ${DBEX}.tab.gz not found! Download first!"
+  elif [ -s "${DBEX}.tab.gz" ]; then
+    echo -e "Extracting ${DBEX}.tab.gz in \e[96m$DTB\e[39m"
+    gunzip -c ${DBEX}.tab.gz > ${DBEX}.tab
+    echo -e "[\e[92mEXTRACT\e[39m] Extracted ${DBEX}.tab! You may delete the archive."
   else
-    echo -e "Check your setings!"
+    echo -e "[\e[91mERROR\e[39m] Check your setings!"
   fi
 }
 
@@ -105,9 +89,9 @@ trim_db(){
     echo -e "[\e[93mPRESENT\e[39m] ${DBTR}.${SBTR}.tab is already in $DTB! Skipping..."
   elif [ ! -s "${DBTR}.tab" ]; then
     echo -e "[\e[91mMISSING\e[39m] No ${DBTR}.tab found in $DTB! Download/extract first!"
-  elif [ -s "${DBTR}.${SBTR}.tab" ]; then
+  elif [ -s "${DBTR}.tab" ]; then
     echo -e "Trimming ${DBTR}.tab in \e[96m$DTB\e[39m"
-    grep "$IDTR" ${DBTR}.${SBTR}.tab > ${DBTR}.${SBTR}.tab
+    grep "$IDTR" ${DBTR}.tab > ${DBTR}.${SBTR}.tab
     echo -e "[\e[92mTRIMMED\e[39m] Trimmed ${DBTR}.tab for ${SBTR}!"
   else
     echo -e "Check your setings!"
