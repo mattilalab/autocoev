@@ -3,11 +3,6 @@
 # Where do we collect the orthologues?
 ORTHO="Orthologues"
 
-report_tsv(){
-  mkdir -p $TMP/tsv
-  touch $TMP/tsv/{OrthoDB_Missing.tsv,proteinsFound.tsv,Summary.tsv,duplicates_OrthoDB.tsv,duplicates_UniProt.tsv,duplicates_OrthoGroup.tsv,blastBestFasta.tsv,blastBestExclude.tsv}
-}
-
 # Pair UniProt ID to the corresponding OrthoDB ID. Help with defining word borders with grep:
 # https://www.linuxquestions.org/questions/linux-newbie-8/how-to-grep-for-an-exact-word-4175439257/
 pair_uniprot_vs_orthodb(){

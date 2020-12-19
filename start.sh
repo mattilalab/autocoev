@@ -38,6 +38,7 @@ echo ""
 # Let user change work dir here as well
 read -p "Change working dir or press ENTER to accept: " -e -i $TMP TMP
 echo -e "\n\e[96m$TMP\e[39m\n"
+mkdir -p $TMP
 
 # Show databases menu
 # Help from:

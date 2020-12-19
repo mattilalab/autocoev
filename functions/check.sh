@@ -21,3 +21,8 @@ preview_tab(){
   head -n 5 $PRVW
   echo ""
 }
+
+report_tsv(){
+  mkdir -p $TMP/tsv
+  touch $TMP/tsv/{OrthoDB_Missing.tsv,proteinsFound.tsv,Summary.tsv,duplicates_OrthoDB.tsv,duplicates_UniProt.tsv,duplicates_OrthoGroup.tsv,blastBestFasta.tsv,blastBestExclude.tsv}
+}
