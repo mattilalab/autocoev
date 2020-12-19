@@ -61,7 +61,7 @@ select prep in "${PREPOPT[@]}" ; do
 case $prep in
 
  "Download $GENEXREFALL")
- download_db "$GENEXREFALL"
+ download_db $GENEXREFALL
  echo -e "\nDone with 1)"
  ;;
   
@@ -76,8 +76,6 @@ case $prep in
  ;;
  
  "Check MD5sum of databases")
- db_exist
- echo ""
  md5sum_check "$GENEXREFALL" "$GENEXREFALLM5"
  md5sum_check "$OG2GENESALL" "$OG2GENESALLM5"
  md5sum_check "$ALLFASTA" "$ALLFASTAM5"
