@@ -65,11 +65,11 @@ extract_db(){
   if [ ! -s "${DBEX}.tab" ]; then
     echo -e "Extracting ${DBEX}.tab.gz in \e[96m$DTB\e[39m"
     gunzip -v -c ${DBEX}.tab.gz > ${DBEX}.tab
-    echo -e "Extracted ${DBEX}.tab! You may delete the archive."
-  elif [ -f "${DBEX}.tab" ]; then
-    echo -e "${DBEX}.tab is already in $DTB! Skipping..."
-  elif [ -z "${DBEX}.tab.gz" ]; then
-    echo -e "Archive ${DBEX}.tab.gz not found! Download first!"
+    echo -e "[\e[92mEXTRACT\e[39m] Extracted ${DBEX}.tab! You may delete the archive."
+  elif [ -s "${DBEX}.tab" ]; then
+    echo -e "[\e[93mPRESENT\e[39m] ${DBEX}.tab is already in $DTB! Skipping..."
+  elif [ ! -s "${DBEX}.tab.gz" ]; then
+    echo -e "[\e[91mMISSING\e[39m] Archive ${DBEX}.tab.gz not found! Download first!"
   else
     echo -e "Check your setings!"
   fi
@@ -84,11 +84,11 @@ index_all_fasta(){
     fastaindex \
       $ALLFASTA.tab \
       $ALLFASTA.tab.index
-    echo -e "Indexing $ALLFASTA.tab complete!"
+    echo -e "[\e[92mINDEXED\e[39m] Indexing $ALLFASTA.tab complete!"
   elif [ -s "$ALLFASTA.tab.index" ]; then
-    echo -e "Indexed $ALLFASTA.tab already present in $DTB! Skipping..."
+    echo -e "[\e[93mPRESENT\e[39m] Indexed $ALLFASTA.tab already present in $DTB! Skipping..."
   elif [ ! -f "$ALLFASTA.tab" ]; then
-    echo -e "No $ALLFASTA.tab found in $DTB! Download/extract first!"
+    echo -e "[\e[91mMISSING\e[39m] No $ALLFASTA.tab found in $DTB! Download/extract first!"
   else
     echo -e "Check your settings!"
   fi
