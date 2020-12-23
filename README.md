@@ -12,4 +12,4 @@ _Petar B. Petrov<sup>1,2*</sup>, Luqman O. Awoniyi<sup>1,2</sup>, Vid Šuštar1<
 **Preprint available at bioRxiv:**
 https://biorxiv.org/cgi/content/short/2020.09.29.315374v1
 
-* Requests for the scripts should be addressed to Petar Petrov (pebope (ат) utu.fi)
+* Requests for the scripts should be addressed to Petar Petrov (pebope ат utu.fi)
