@@ -8,13 +8,13 @@ _Petar B. Petrov<sup>1,2*</sup>, Luqman O. Awoniyi<sup>1,2</sup>, Vid Šuštar1<
 2. Turku Bioscience, University of Turku and Åbo Akademi University, Turku, Finland
 
 
-**Preprint** https://www.biorxiv.org/content/10.1101/2020.09.29.315374v3
+**Preprint:** https://www.biorxiv.org/content/10.1101/2020.09.29.315374v3
 
 
-**A virtual machine image of Slackware with all software tools preinstalled is available:**
+**VM:** https://seafile.utu.fi/d/c73b5164095f4fafb23d/
 
 
-https://seafile.utu.fi/d/c73b5164095f4fafb23d/
+The virtual machine image has a Slackware installation with all software tools preinstalled. Please, download the latest AutoCoEv from GitHub and follow the steps.
 
 
 **NOTE! I will be uploading some major updates of the script, featuring cleanups after Monday 29th 2021** (_-petar_)
