@@ -16,9 +16,7 @@ https://www.biorxiv.org/content/10.1101/2020.09.29.315374v3
 https://seafile.utu.fi/d/c73b5164095f4fafb23d/
 
 
-**NOTE!**
+**NOTE! I will be uploading some major updates of the script, featuring cleanups after Monday 29th 2021**
 
-
-**I will be uploading some major updates of the script, featuring cleanups after Monday 29th 2021**
 
 * Requests for the scripts should be addressed to Petar Petrov (pebope ат utu.fi)
