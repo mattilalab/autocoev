@@ -12,7 +12,7 @@ _Petar B. Petrov<sup>1,2*</sup>, Luqman O. Awoniyi<sup>1,2</sup>, Vid Šuštar1<
 https://www.biorxiv.org/content/10.1101/2020.09.29.315374v3
 
 
-**A virtual machine image (SlautoCoEv) with all software tools preinstalled is available:**
+**A virtual machine image of Slackware with all software tools preinstalled is available:**
 https://seafile.utu.fi/d/c73b5164095f4fafb23d/
 
 
