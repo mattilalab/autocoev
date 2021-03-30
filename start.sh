@@ -153,8 +153,6 @@ echo -e "UniProt reference sequences are from:.........\e[92m$ORGANISM\e[39m"
 echo -e "Reverse BLAST identity (%) cutoff:............\e[92m$PIDENT\e[39m"
 echo -e "Reverse BLAST gaps (%) cutoff:................\e[92m$PGAPS\e[39m"
 echo -e "MSAs for PhyML and/or CAPS created by:........\e[92m$MSAMETHOD\e[39m"
-echo -e "Process MSAs before CAPS run (Gblocks)?.......\e[92m$GBLOCKS\e[39m"
-echo -e "Run PhyML on processed MSAs (Gblocks)?........\e[92m$PHYMLGBLOCKS\e[39m"
 echo -e "Root the PhyML produced trees?................\e[92m$TREESROOT\e[39m"
 echo -e "Do we use external guide tree for PhyML?......\e[92m$PHYMLGUIDE\e[39m"
 echo -e "Trees to be used with CAPS:...................\e[92m$TREESCAPS\e[39m"
@@ -162,8 +160,6 @@ echo -e "Minimum number of common species in a pair:...\e[92m$MINCOMMONSPCS\e[39
 echo -e "CAPS alpha-value cutoff at runtime:...........\e[92m$ALPHA\e[39m"
 echo -e "CAPS bootstrap value at runtime:..............\e[92m$BOOT\e[39m"
 echo -e "Postrun bootstrap threshold cutoff:...........\e[92m$RESBOOT\e[39m"
-echo -e "Alignment gaps postrun cutoff:................\e[92m$RESGAPS\e[39m"
-echo -e "Column identity postrun cutoff:...............\e[92m$RESIDEN\e[39m"
 echo -e "Postrun P-value correlation cutoff:...........\e[92m$PVALUE\e[39m"
 echo -e "Postrun Bonferroni correction cutoff:.........\e[92m$BONFERRONI\e[39m"
 echo -e "\n"
@@ -365,11 +361,11 @@ caps_set
 for folder in $TMP/$CAPSM/* ; do
   cd $folder
   echo -e "Processing \e[92m${folder}\e[39m"
-  echo "$DATESTAMP ${folder}" >> $TMP/progress-$ALPHA-$MSAMETHOD-$GBLOCKS-$TREESCAPS.txt
+  echo "$DATESTAMP ${folder}" >> $TMP/progress-$ALPHA-$MSAMETHOD-$TREESCAPS.txt
   PAIRLIST=$(ls)
   parallel $CORESCAPS --progress capsfn ::: "$PAIRLIST"
   echo -e "Done in \e[92m${folder}\e[39m"
-  echo "" >> $TMP/progress-$ALPHA-$MSAMETHOD-$GBLOCKS-$TREESCAPS.txt
+  echo "" >> $TMP/progress-$ALPHA-$MSAMETHOD-$TREESCAPS.txt
   cd ..
 done
 echo -e "\nDone with 10"
