@@ -15,7 +15,7 @@ musclefn() {
   fi 
 }
 
-prankfn() {
+prankprep() {
   if [ "$PRANKGUIDE" = "exguide" ]; then
     mkdir -p $TMP/$MSA
     cp $CWD/$EXTTREE $TMP/$MSA
@@ -23,11 +23,13 @@ prankfn() {
     sed -i "s/$b/$a/g" $TMP/$MSA/$EXTTREE
     done
     echo -e "Species names in the external tree changed to TAXID!"
-    PRGUID="-t=${TMP}/$MSA/${EXTTREE} -prunetree"
+    PRGUID="-t=$TMP/$MSA/$EXTTREE -prunetree"
   else
     PRGUID=""
   fi
-  
+}
+
+prankfn() {
   local SEQMSA="${1}"
   if [ -s $SEQMSA.fa ] ; then
     $MSAMETHOD $PRGUID $PRANKOPTIONS \
@@ -77,8 +79,10 @@ position_reference(){
     sed -n -e '/Gblocks  /p' $van.gbl.txt | tr -d '\n' | tr -d ' ' | tr -d 'Gblocks' >> $van.$ORGANISM
     PRLNGT=$(head -n1 $van.$ORGANISM | awk '{print length}')
     sed -i 's/./& /g' $van.$ORGANISM
-    cat $van.$ORGANISM | datamash -W transpose | awk '$1 !~ /-/' | awk -v BIGNUM="$PRLNGT" '{print ((NR-1)%BIGNUM)+1, $0}' | awk '$3 ~ /#/' | awk -v BIGNUM="$PRLNGT" '{print ((NR-1)%BIGNUM)+1, $0}' > $van.$ORGANISM.col
+    #cat $van.$ORGANISM | datamash -W transpose | awk '$1 !~ /-/' | awk -v BIGNUM="$PRLNGT" '{print ((NR-1)%BIGNUM)+1, $0}' | awk '$3 ~ /#/' | awk -v BIGNUM="$PRLNGT" '{print ((NR-1)%BIGNUM)+1, $0}' > $van.$ORGANISM.col
+    cat $van.$ORGANISM | datamash -W transpose | awk '$1 !~ /-/' | awk -v BIGNUM="3000" '{print ((NR-1)%BIGNUM)+1, $0}' > $van.$ORGANISM.ref
     rm $van.$ORGANISM
-    sed -i "s: :\t:g" $van.$ORGANISM.col
+    #sed -i "s: :\t:g" $van.$ORGANISM.col
+    sed -i "s: :\t:g" $van.$ORGANISM.ref
   done
 }

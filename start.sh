@@ -10,7 +10,7 @@ DATESTAMP=$(date)
 CWD=$(pwd)
 
 NAME="AutoCoEv" # script name
-VER="0.048beta" # version
+VER="0.05beta" # version
 
 # Load settings first
 . $CWD/settings.conf
@@ -186,7 +186,6 @@ SEQOPT=( "Pair UniProt <-> OrthoDB <-> OGuniqueID"
          "[RES] Inspect CAPS results"
          "[RES] Generate columns stats"
          "[XML] Process CAPS results"
-	 "[NET] View results in R Shiny"
          "[Exit script]" )
 
 select opt in "${SEQOPT[@]}" ; do
@@ -298,6 +297,7 @@ echo -e "\nDone with 5)"
     if [ "$MSAMETHOD" = "muscle" ]; then
       parallel $CORESMUSCLE musclefn ::: $UNIPROTID
     elif [ "$MSAMETHOD" = "prank" ]; then
+      prankprep
       parallel $CORESPRANK prankfn ::: $UNIPROTID
     elif [ "$MSAMETHOD" = "mafft" ] || [ "$MSAMETHOD" = "mafft-linsi" ] || [ "$MSAMETHOD" = "mafft-ginsi" ] || [ "$MSAMETHOD" = "mafft-einsi" ] || [ "$MSAMETHOD" = "mafft-fftns" ] || [ "$MSAMETHOD" = "mafft-fftnsi" ]; then
       parallel $CORESCAPS mafftfn ::: $UNIPROTID
@@ -422,11 +422,6 @@ echo -e "\nDone with 12"
 "[XML] Process CAPS results")
 write_xml
 echo -e "\nDone with 13"
-;;
-
-"[NET] View results in R Shiny")
-view_shiny
-echo -e "\nDone with 14"
 ;;
 
 "[Exit script]")

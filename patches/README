@@ -75,3 +75,9 @@ double Pvalue2 = getIndex(totaltemp, Correl2[cor]);
 The patched executable of CAPS is installed as "vCAPS", so it can be
  installed along the the official binary "caps" provided by upstream.
  
+3) extraVerbose.patch
+This will save the contents of the totaltemp vector to a text file. This
+may be desired if you wish to inspect the simulated data. Be warned that
+the size of the generated files can be hundreds ot MB or even more!!
+
+DO NOT USE THE PATCH WITH AUTOCOEV -- YOU WILL FILL YOUR HARD DRIVE.
