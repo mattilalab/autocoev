@@ -1,5 +1,7 @@
 #!/bin/bash
 
+MSASUFF="fa" # define MSA extension
+
 # Construct the PAIRS folder
 if [ "$TREESCAPS" = "phyml" ]; then
   PAIRM="Pairs-${PAIRINGMANNER}/${MSAMETHOD}..PhyML_${PHYMLGUIDE}-${TREESROOT}"
@@ -27,14 +29,6 @@ pair_msa() {
 
   echo -e "Protein1\tProtein2\tCommon" > $TMP/tsv/pairsGood.tsv
   echo -e "Protein1\tProtein2\tCommon" > $TMP/tsv/pairsBad.tsv
-
-  if [ "$GBLOCKS" = "vanilla" ]; then
-    MSASUFF="fa"
-  elif [ "$GBLOCKS" = "gblocks" ]; then
-    MSASUFF="fa.gbl"
-  else
-    echo -e "Check your Gblocks settings ($GBLOCKS)!"
-  fi
 
   cd $TMP/$MSA/$MSAMETHOD
   MSALIST=$(ls *.${MSASUFF})
@@ -74,14 +68,6 @@ pair_defined_msa() {
 
   echo -e "Protein1\tProtein2\tCommon" > $TMP/tsv/pairsGood.tsv
   echo -e "Protein1\tProtein2\tCommon" > $TMP/tsv/pairsBad.tsv
-
-  if [ "$GBLOCKS" = "vanilla" ]; then
-    MSASUFF="fa"
-  elif [ "$GBLOCKS" = "gblocks" ]; then
-    MSASUFF="fa.gbl"
-  else
-    echo -e "Check your Gblocks settings ($GBLOCKS)!"
-  fi
 
   cd $TMP/$MSA/$MSAMETHOD
   while read -r nami namj ; do
