@@ -49,19 +49,10 @@ phyml_guide(){
 phyml_prep(){
   mkdir -p $TMP/$TREES/phyml/$MSATRETAG/phy/
   cd $TMP/$MSA/$MSAMETHOD
-  if [ "$GBLOCKS" = "vanilla" ]; then
-    VANMSA=$(ls *.fa)
-    for vmsa in ${VANMSA[@]} ; do
-      squizz $vmsa -c PHYLIPI > $TMP/$TREES/phyml/$MSATRETAG/phy/${vmsa%.*}.phy
-    done
-  elif [ "$GBLOCKS" = "gblocks" ]; then
-    GBLMSA=$(ls *.gbl)
-    for gmsa in ${GBLMSA[@]} ; do
-      squizz $gmsa -c PHYLIPI > $TMP/$TREES/phyml/$MSATRETAG/phy/${gmsa%.*.*}.phy
-    done
-  else
-    echo -e "Check your MSAs!"
-  fi
+  VANMSA=$(ls *.fa)
+  for vmsa in ${VANMSA[@]} ; do
+    squizz $vmsa -c PHYLIPI > $TMP/$TREES/phyml/$MSATRETAG/phy/${vmsa%.*}.phy
+  done
 }
 
 phymlfn() {

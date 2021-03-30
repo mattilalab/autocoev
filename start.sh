@@ -180,9 +180,9 @@ SEQOPT=( "Pair UniProt <-> OrthoDB <-> OGuniqueID"
          "BLAST orthologues against UniProt sequence ($ORGANISM, detailed: $DETBLAST)"
          "Get FASTA sequences of the best hits (identity: $PIDENT; gaps: $PGAPS)"
          "[MSA] Create MSA with selected method ($MSAMETHOD)"
-         "[TRE] Prepare trees ($TREESCAPS, $MSAMETHOD, $PHYMLGBLOCKS, $PHYMLGUIDE, $TREESROOT)"
+         "[TRE] Prepare trees ($TREESCAPS, $MSAMETHOD, $PHYMLGUIDE, $TREESROOT)"
          "[RUN] Create pairs ($PAIRINGMANNER)"
-         "[RUN] CAPS run (alpha: $ALPHA, $MSAMETHOD, $GBLOCKS, $TREESCAPS)"
+         "[RUN] CAPS run (alpha: $ALPHA, $MSAMETHOD, $TREESCAPS)"
          "[RES] Inspect CAPS results"
          "[RES] Generate columns stats"
          "[XML] Process CAPS results"
@@ -313,12 +313,10 @@ echo -e "\nDone with 5)"
 echo -e "\nDone with 7)"
 ;;
 
-"[TRE] Prepare trees ($TREESCAPS, $MSAMETHOD, $PHYMLGBLOCKS, $PHYMLGUIDE, $TREESROOT)")
+"[TRE] Prepare trees ($TREESCAPS, $MSAMETHOD, $PHYMLGUIDE, $TREESROOT)")
 
 if [ "$TREESCAPS" = "auto" ]; then
   echo -e "CAPS will generate its own trees. Skipping..."
-elif [ "$TREESCAPS" = "external" ]; then
-  ext_trees
 elif [ "$TREESCAPS" = "phyml" ] && [ "$PHYMLGUIDE" = "exguide" ]; then
   phyml_ext
   phyml_guide
@@ -361,7 +359,7 @@ fi
 echo -e "\nDone with 9"
 ;;
 
-"[RUN] CAPS run (alpha: $ALPHA, $MSAMETHOD, $GBLOCKS, $TREESCAPS)")
+"[RUN] CAPS run (alpha: $ALPHA, $MSAMETHOD, $TREESCAPS)")
 split_dirs
 caps_set
 for folder in $TMP/$CAPSM/* ; do
