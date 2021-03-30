@@ -3,7 +3,7 @@
 TREES="Trees"
 
 # Construct the folder where trees will be calculated
-MSATRETAG="${MSAMETHOD}_${PHYMLGBLOCKS}-${PHYMLGUIDE}"
+MSATRETAG="${MSAMETHOD}-${PHYMLGUIDE}"
 PHYMLCORES="--j ${THREADS}" # "12"
 
 # Trim the external tree following the species in each MSA. These can be
