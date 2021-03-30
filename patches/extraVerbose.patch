@@ -1,0 +1,43 @@
+diff -pruN orig/caps.cpp new/caps.cpp
+--- orig/caps.cpp	2021-03-23 14:36:09.044861000 +0200
++++ new/caps.cpp	2021-03-23 17:21:39.432706915 +0200
+@@ -15,8 +15,8 @@
+ #include<sys/time.h>
+ #include<iomanip>
+ #include <bits/stdc++.h> 
+-
+-
++#include <vector>
++#include <string>
+ 
+ #include <Seq/SequenceApplicationTools.h>
+ #include <Seq/SiteTools.h>
+@@ -680,6 +680,10 @@ int main(int argc, char *argv[]){
+ 
+ 					threshold = totaltemp[value];
+ 					totaltempnew = totaltemp;
++					
++					// This is shamelessly taken from: https://stackoverflow.com/a/39746650
++					std::ofstream outFile("totaltemp.txt");
++					for (const auto &e : totaltemp) outFile << e << "\n";
+ 
+ 
+ 					/*=======================================================*/
+@@ -910,8 +914,6 @@ double getIndex(std::vector<double> cons
+ } 
+ 
+ 
+-
+-
+ /* 
+  * ===  FUNCTION  ======================================================================
+  *         Name:  print_inter
+@@ -926,7 +928,7 @@ int print_inter(vector<double>& Correl1,
+ 	int cor=0, pairs=0;
+ 
+ 	output << endl << endl;
+-
++	
+ 	output << "Coevolving Pairs of amino acid sites\n";
+ 	output << "================================================================================================================================\n";
+ 	output << "Col1(real)\tCol2(real)\tDmean1\t\tDmean2\t\tCorrelation\tBootstrap value\tP-value1\tP-value2\tMean P-value\tCorrelation1\tCorrelation2\n\n";
