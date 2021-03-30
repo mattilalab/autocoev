@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# CAPS executavle
+# CAPS executable
 #CAPS=caps
 CAPS=vCAPS
 
@@ -41,5 +41,5 @@ capsfn() {
     -F ./msa 2> log.txt
   cd ..
   echo -e Processed "$PAIR"
-  echo "$PAIR" >> $TMP/progress-$ALPHA-$MSAMETHOD-$GBLOCKS-$TREESCAPS.txt
+  echo "$PAIR" >> $TMP/progress-$ALPHA-$MSAMETHOD-$TREESCAPS.txt
 }
