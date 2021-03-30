@@ -17,7 +17,7 @@ _Petar B. Petrov<sup>1,2*</sup>, Luqman O. Awoniyi<sup>1,2</sup>, Vid Šuštar1<
 The virtual machine image has a Slackware installation with all software tools preinstalled. Please, download the latest AutoCoEv from GitHub and follow the steps.
 
 
-**NOTE! I will be uploading some major updates of the script (v0.5beta!), featuring cleanups after Monday 29th March 2021** (_-petar_)
+**NOTE! I will be uploading some major updates of the script (>v0.6beta!), featuring cleanups in the periond of 29.03-02.04 2021** (_-petar_)
 
 
 * Requests for the scripts should be addressed to Petar Petrov (pebope ат utu.fi)
