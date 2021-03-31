@@ -1,3 +1,8 @@
+2021-03-31
+Update the manual
+Cleanups, enhancements
+new post-run script is added: end.sh
+
 2020-12-23
 Include Bonferroni correction by R
 Include R Shiny display of the network
