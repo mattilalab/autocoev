@@ -32,9 +32,6 @@ capsfn() {
     --inter \
     -a ${ALPHA} \
     -b ${BOOT} \
-    ${ALNS} \
-    ${CONV} \
-    ${GAPS} \
     ${REFER} \
     ${CAPSOPTIONS} \
     ${TREMSA} \
