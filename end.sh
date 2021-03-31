@@ -24,20 +24,33 @@ CWD=$(pwd)
 . $CWD/functions/network.sh
 . $CWD/functions/check.sh
 
+# Define cutoff; this is done interactively, but let's have some values
 EGAPS="0.8" # Gaps score cut
-EPDIF="0.0011"
+EPDIF="0.0011" # p-values difference
 
+# Automatically determine path to the file to be processed
 ETSV="$TMP/$RESULTS/pairs-P${PVALUE}-B${BONFERRONI}.tsv"
-EOUT="filtered-P${PVALUE}-pDiff${EPDIF}-Bonf${BONFERRONI}.tsv"
-ENET="FILTERED-P${PVALUE}-pDiff${EPDIF}-Bonf${BONFERRONI}.xml"
 
 # Let user change work dir here as well
-read -p "Change working dir or press ENTER to accept: " -e -i $TMP TMP
+echo -e "\n\e[96mChange working dir or press ENTER to accept:\e[39m"
+read -e -i $TMP TMP
 mkdir -p $TMP
 
 # Specify the input file
 echo -e "\n\e[96mEnter the full path to the pairs-P${PVALUE}-B${BONFERRONI}.tsv file:\e[39m"
 read -e -i $ETSV ETSV
+
+# Specify gaps score cutoff
+echo -e "\n\e[96mChange gaps score cutoff or press ENTER to accept:\e[39m"
+read -e -i $EGAPS EGAPS
+
+# Specify p-value difference within the same pair cutoff
+echo -e "\n\e[96mChange allowed p-value difference within the same pair or press ENTER to accept:\e[39m"
+read -e -i $EPDIF EPDIF
+
+# Define paths and files
+EOUT="filtered-P${PVALUE}-pDiff${EPDIF}-Bonf${BONFERRONI}.tsv"
+ENET="FILTERED-P${PVALUE}-pDiff${EPDIF}-Bonf${BONFERRONI}.xml"
 
 rm -rf $TMP/$RESULTS/pairs-P${PVALUE}-B${BONFERRONI}
 mkdir -p $TMP/$RESULTS/pairs-P${PVALUE}-B${BONFERRONI}
