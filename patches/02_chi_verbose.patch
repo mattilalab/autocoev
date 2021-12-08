@@ -1,0 +1,36 @@
+diff -pruN new/caps.cpp chi/caps.cpp
+--- new/caps.cpp	2021-11-16 16:21:51.935594003 +0200
++++ chi/caps.cpp	2021-11-16 16:13:09.143602000 +0200
+@@ -785,7 +785,8 @@ int main(int argc, char *argv[]){
+ 
+ 		interact << "\n\nWhat does each gene say about the others           \n";
+ 		interact << "=======================================================\n";
+-
++                interact <<  "file[i]\tfile[j]\tINTERACT?\tfile_back[i]\texp\tnott\tback_not\tchi_pass\tchi\n";
++		
+ 		vector<double> file_back;
+ 		for(unsigned int i=0;i<files.size();++i){
+ 
+@@ -805,6 +806,7 @@ int main(int argc, char *argv[]){
+ 
+ 				if(i!=j){
+ 					int nott = coev_total[i][j]-coev[i][j];
++					double chi_pass = gsl_cdf_chisq_Pinv(0.95, 1);
+ 					double back_not = (1-file_back[i])*(double)coev_total[i][j];
+ 					double exp = file_back[i]*(double)coev_total[i][j];	
+ 					double chi = pow(((double)coev[i][j]-exp),2)/exp;
+@@ -813,11 +815,11 @@ int main(int argc, char *argv[]){
+ 					interact << files[i] << "\t" << files[j];
+ 
+ 					if(chi >=gsl_cdf_chisq_Pinv(0.95, 1) && (double)coev[i][j]>(exp)){
+-						interact << "\tYES\n";
++						interact << "\tYES" << "\t" << file_back[i] << "\t" << exp << "\t" << nott << "\t" << back_not << "\t" << chi_pass << "\t" << chi << "\n";
+ 					}else if(chi >=gsl_cdf_chisq_Pinv(0.95, 1) && (double)coev[i][j]<(exp)){
+-						interact << "\tNO\n";
++						interact << "\tNO" << "\t" << file_back[i] << "\t" << exp << "\t" << nott << "\t" << back_not << "\t" << chi_pass << "\t" << chi << "\n";
+ 					}else{
+-						interact << "\tNO\n";
++						interact << "\tNO" << "\t" << file_back[i] << "\t" << exp << "\t" << nott << "\t" << back_not << "\t" << chi_pass << "\t" << chi << "\n";
+ 					}
+ 					if(i!=j)
+ 						++k;

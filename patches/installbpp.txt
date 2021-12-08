@@ -1,0 +1,67 @@
+#!/bin/sh
+
+***bpp-utils-1.5.0***
+
+sed -i "s:file;:file.good();:g" Utils/FileTools.cpp
+sed -i "s:/lib/:/lib/Bpp1.9/:g" Utils.spec
+
+mkdir -p build
+cd build
+cmake -DCMAKE_CXX_FLAGS:STRING="-Wl,-rpath,/usr/local/lib/Bpp1.9" -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_BUILD_TYPE=Release ..
+
+sed -i "s:/lib\b:/lib/Bpp1.9:g" Utils/cmake_install.cmake
+sed -i "s:Bpp1.9/Bpp1.9:Bpp1.9:g" Utils/cmake_install.cmake
+
+make
+make install
+rm '/usr/local/lib/Bpp1.9/libbpp-utils.a'
+
+***bpp1.9-numcalc***
+
+export PATH="/usr/local/lib/Bpp1.9/:$PATH"
+sed -i "s:/lib/:/lib/Bpp1.9/:g" NumCalc.spec
+mkdir -p build
+cd build
+cmake -DCMAKE_CXX_FLAGS:STRING="-Wl,-rpath,/usr/local/lib/Bpp1.9" -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_BUILD_TYPE=Release ..
+
+sed -i "s:/lib\b:/lib/Bpp1.9:g" NumCalc/cmake_install.cmake
+sed -i "s:Bpp1.9/Bpp1.9:Bpp1.9:g" NumCalc/cmake_install.cmake
+
+make
+make install
+rm /usr/local/lib/Bpp1.9/libbpp-numcalc.a
+
+***bpp-seq-1.7.0***
+
+export PATH="/usr/local/lib/Bpp1.9/:$PATH"
+sed -i "s:/lib/:/lib/Bpp1.9/:g" Seq.spec
+
+mkdir -p build
+cd build
+cmake -DCMAKE_CXX_FLAGS:STRING="-Wl,-rpath,/usr/local/lib/Bpp1.9" -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_BUILD_TYPE=Release ..
+
+sed -i "s:/lib\b:/lib/Bpp1.9:g" Seq/cmake_install.cmake
+sed -i "s:Bpp1.9/Bpp1.9:Bpp1.9:g" Seq/cmake_install.cmake
+
+make
+make install
+rm /usr/local/lib/Bpp1.9/libbpp-seq.a
+
+***bpp-phyl-1.9.0***
+
+# CAPS wants TreeTemplateTools to be modified a bit...
+patch -p1 -i ../caps_TreeTemplateTools.patch
+
+export PATH="/usr/local/lib/Bpp1.9/:$PATH"
+sed -i "s:/lib/:/lib/Bpp1.9/:g" Phyl.spec
+
+mkdir -p build
+cd build
+cmake -DCMAKE_CXX_FLAGS:STRING="-Wl,-rpath,/usr/local/lib/Bpp1.9" -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_BUILD_TYPE=Release ..
+
+sed -i "s:/lib\b:/lib/Bpp1.9:g" Phyl/cmake_install.cmake
+sed -i "s:Bpp1.9/Bpp1.9:Bpp1.9:g" Phyl/cmake_install.cmake
+
+make
+make install
+rm /usr/local/lib/Bpp1.9/libbpp-phyl.a

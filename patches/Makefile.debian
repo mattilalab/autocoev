@@ -1,0 +1,29 @@
+CC=g++ -g -O2 -fPIC
+CFLAGS=#-W -Wall
+OPT=-Wl,-L/usr/local/lib/Bpp1.9,-rpath,/usr/local/lib/Bpp1.9 #-fast #-mtune=native #-ftree-vectorize -ffast-math #-funroll-loops
+MATH =-lm
+DEBUG=-g
+BIOPHYL=-lbpp-phyl
+BIONUC=-lbpp-numcalc
+BIOUT=-lbpp-utils
+BIOSEQ=-lbpp-seq
+RM=rm -f
+ARCH=#-arch i386
+GSL=-lgsl -lgslcblas #-I/sw/include -L/sw/lib
+
+all:	BCFasta.o file_manip.o Blosum.o create.o caps 
+
+caps: caps.cpp file_manip.o create.o BCFasta.o Blosum.o
+	$(CC) $(CFLAGS) $(OPT)  -o vCAPS caps.cpp file_manip.o BCFasta.o create.o Blosum.o $(GSL) $(ARCH) $(BIOPHYL) $(BIOUT) $(BIONUC) $(BIOSEQ)
+Blosum.o: Blosum.cpp
+	$(CC) $(CFLAGS) $(OPT) -c Blosum.cpp
+create.o: create.cpp
+	$(CC) $(OPT) $(CFLAGS) -c create.cpp
+file_manip.o: file_manip.cpp
+	$(CC) $(OPT) $(CFLAGS) -c file_manip.cpp
+BCFasta.o: BCFasta.cpp
+	$(CC) $(OPT) $(CFLAGS) -c BCFasta.cpp
+clean:
+	$(RM) *.o *~ caps
+cleanout:
+	$(RM) *.o *~ caps *.csv *.out 
