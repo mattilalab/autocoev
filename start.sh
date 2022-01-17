@@ -10,7 +10,7 @@ DATESTAMP=$(date)
 CWD=$(pwd)
 
 NAME="AutoCoEv" # script name
-VER="0.06beta" # version
+VER="0.1.1beta" # version
 
 # Load settings first
 . $CWD/settings.conf
@@ -19,6 +19,7 @@ VER="0.06beta" # version
 . $CWD/functions/databases.sh
 . $CWD/functions/retrieval.sh
 . $CWD/functions/blast.sh
+. $CWD/functions/guidance.sh
 . $CWD/functions/msa.sh
 . $CWD/functions/trees.sh
 . $CWD/functions/pairing.sh
@@ -26,6 +27,7 @@ VER="0.06beta" # version
 . $CWD/functions/results.sh
 . $CWD/functions/network.sh
 . $CWD/functions/check.sh
+. $CWD/functions/chi2.sh
 
 # User provided input
 echo -e "\nWelcome to \e[46m${NAME} version ${VER}!\e[49m $DATESTAMP\n"
@@ -142,7 +144,7 @@ ls $PROTEIN/
 read -p "Change species list or press ENTER to continue: " -e -i $SPECIES SPECIES
 preview_tab $SPECIES
 
-read -p "How many threads do we use?: " -e -i $THREADS THREADS
+#read -p "How many threads do we use?: " -e -i $THREADS THREADS
 echo -e "CPU threads to be used are: \e[92m$THREADS\e[39m\n"
 echo -e "We achieve parallelization via \e[92mGNU/Parallel\e[39m"
 echo -e "Run 'parallel --citation' once to silence its citation notice.\n\n"
@@ -152,14 +154,15 @@ echo -e "Work directory: \e[92m${TMP}\e[39m\n"
 echo -e "UniProt reference sequences are from:.........\e[92m$ORGANISM\e[39m"
 echo -e "Reverse BLAST identity (%) cutoff:............\e[92m$PIDENT\e[39m"
 echo -e "Reverse BLAST gaps (%) cutoff:................\e[92m$PGAPS\e[39m"
-echo -e "MSAs for PhyML and/or CAPS created by:........\e[92m$MSAMETHOD\e[39m"
-echo -e "Root the PhyML produced trees?................\e[92m$TREESROOT\e[39m"
-echo -e "Do we use external guide tree for PhyML?......\e[92m$PHYMLGUIDE\e[39m"
+echo -e "MSAs for orthologues assessment created by....\e[92m$GUIDANCEMSA\e[39m"
+echo -e "Guidance orthologues cutoff...................\e[92m$GUIDANCECUT\e[39m"
+echo -e "MSAs for PhyML and/or CAPS to be created by:..\e[92m$MSAMETHOD\e[39m"
+echo -e "Use rooted PhyML trees (if selected)?.........\e[92m$TREESROOT\e[39m"
+echo -e "Use guide tree for PhyML (if selected)?.......\e[92m$PHYMLGUIDE\e[39m"
 echo -e "Trees to be used with CAPS:...................\e[92m$TREESCAPS\e[39m"
 echo -e "Minimum number of common species in a pair:...\e[92m$MINCOMMONSPCS\e[39m"
 echo -e "CAPS alpha-value cutoff at runtime:...........\e[92m$ALPHA\e[39m"
 echo -e "CAPS bootstrap value at runtime:..............\e[92m$BOOT\e[39m"
-echo -e "Postrun bootstrap threshold cutoff:...........\e[92m$RESBOOT\e[39m"
 echo -e "Postrun P-value correlation cutoff:...........\e[92m$PVALUE\e[39m"
 echo -e "Postrun Bonferroni correction cutoff:.........\e[92m$BONFERRONI\e[39m"
 echo -e "\n"
@@ -175,6 +178,7 @@ SEQOPT=( "Pair UniProt <-> OrthoDB <-> OGuniqueID"
          "Download sequences from UniProt (organism: $ORGANISM)"
          "BLAST orthologues against UniProt sequence ($ORGANISM, detailed: $DETBLAST)"
          "Get FASTA sequences of the best hits (identity: $PIDENT; gaps: $PGAPS)"
+	 "[MSA] Exclude too divergent sequences"
          "[MSA] Create MSA with selected method ($MSAMETHOD)"
          "[TRE] Prepare trees ($TREESCAPS, $MSAMETHOD, $PHYMLGUIDE, $TREESROOT)"
          "[RUN] Create pairs ($PAIRINGMANNER)"
@@ -283,10 +287,26 @@ echo -e "\nDone with 5)"
   echo -e "\nDone with 6)"
 ;;
 
+"[MSA] Exclude too divergent sequences")
+PROTLST=$(ls $CWD/$PROTEIN/)
+  cd $TMP/$GETFA
+  rm -rf $TMP/tsv/excluded-$GUIDANCEMSA-$GUIDANCECUT.tsv
+  rm -rf $TMP/$GUIDANCE/$GUIDANCEMSA-$GUIDANCECUT
+  mkdir -p $TMP/$GUIDANCE/$GUIDANCEMSA-$GUIDANCECUT/
+  rm -rf $TMP/$GUIDEDFA/$GUIDANCEMSA-$GUIDANCECUT
+  mkdir -p $TMP/$GUIDEDFA/$GUIDANCEMSA-$GUIDANCECUT/
+  for prlst in ${PROTLST[@]} ; do
+    UNIPROTID=$( awk '{print $1}' $CWD/$PROTEIN/$prlst | datamash transpose )
+    parallel $CORESCAPS run_guidance ::: $UNIPROTID
+  done
+echo -e "\nDone with 7)"
+
+;;
+
 "[MSA] Create MSA with selected method ($MSAMETHOD)")
   PROTLST=$(ls $CWD/$PROTEIN/)
-  cd $TMP/$GETFA
-  mkdir -p $TMP/$MSA/$MSAMETHOD/
+  cd $TMP/$GUIDEDFA/$GUIDANCEMSA-$GUIDANCECUT
+  mkdir -p $TMP/$MSA/${GUIDANCEMSA}-${GUIDANCECUT}-${MSAMETHOD}/
   for prlst in ${PROTLST[@]} ; do
     UNIPROTID=$( awk '{print $1}' $CWD/$PROTEIN/$prlst | datamash transpose )
   
@@ -302,11 +322,11 @@ echo -e "\nDone with 5)"
     fi
   done
 
-  cd $TMP/$MSA/$MSAMETHOD/
+  cd $TMP/$MSA/${GUIDANCEMSA}-${GUIDANCECUT}-${MSAMETHOD}/
   msa_process
   position_reference
 
-echo -e "\nDone with 7)"
+echo -e "\nDone with 8)"
 ;;
 
 "[TRE] Prepare trees ($TREESCAPS, $MSAMETHOD, $PHYMLGUIDE, $TREESROOT)")
@@ -321,7 +341,7 @@ elif [ "$TREESCAPS" = "phyml" ] && [ "$PHYMLGUIDE" = "exguide" ]; then
   PROTLST=$(ls $CWD/$PROTEIN/)
   for prlst in ${PROTLST[@]} ; do
     UNIPROTID=$( awk '{print $1}' $CWD/$PROTEIN/$prlst | datamash transpose )
-    parallel $CORESPHYML phymlfn ::: $UNIPROTID
+    parallel $CORESCAPS phymlfn ::: $UNIPROTID
   done
 
   phyml_process
@@ -332,14 +352,14 @@ elif [ "$TREESCAPS" = "phyml" ] && [ "$PHYMLGUIDE" = "noguide" ]; then
   PROTLST=$(ls $CWD/$PROTEIN/)
   for prlst in ${PROTLST[@]} ; do
     UNIPROTID=$( awk '{print $1}' $CWD/$PROTEIN/$prlst | datamash transpose )
-    parallel $CORESPHYML phymlfn ::: $UNIPROTID
+    parallel $CORESCAPS phymlfn ::: $UNIPROTID
   done
 
   phyml_process
 else
   echo -e "Check your tree settings!"
 fi
-echo -e "\nDone with 8)"
+echo -e "\nDone with 9)"
 ;;
 
 "[RUN] Create pairs ($PAIRINGMANNER)")
@@ -352,7 +372,7 @@ elif [ "$PAIRINGMANNER" = "defined" ]; then
 else
   echo -e "Check your pairing settings!"
 fi
-echo -e "\nDone with 9"
+echo -e "\nDone with 10"
 ;;
 
 "[RUN] CAPS run (alpha: $ALPHA, $MSAMETHOD, $TREESCAPS)")
@@ -368,7 +388,7 @@ for folder in $TMP/$CAPSM/* ; do
   echo "" >> $TMP/progress-$ALPHA-$MSAMETHOD-$TREESCAPS.txt
   cd ..
 done
-echo -e "\nDone with 10"
+echo -e "\nDone with 11"
 ;;
 
 "[RES] Inspect CAPS results")
@@ -383,6 +403,16 @@ for folder in * ; do
 done
 echo -e "\n\e[92mResults inspections done!\e[39m\n"
 
+mkdir -p $TMP/$RESULTS/chi/{back_calc,back_calc_final,chi_test,chi_test_final,proteins,proteinsFinal}
+coev_inter_collect
+
+# Chi tests
+cd $TMP/$RESULTS/chi/proteins
+protInt=$( ls ./ )
+parallel $CORESCAPS calc_back ::: "$protInt"
+
+#coev_inter_chi_results
+
 cd $TMP/$RESULTS/coev/
 for resfold in * ; do
   echo -e "Processing $resfold"
@@ -392,7 +422,7 @@ for resfold in * ; do
   cd ..
 done
 
-echo -e "\nDone with 11"
+echo -e "\nDone with 12"
 ;;
 
 "[RES] Generate columns stats")
@@ -405,17 +435,42 @@ for resfold in * ; do
   parallel $CORESCAPS adj_pVal ::: "$SUBFOLD"
   parallel $CORESCAPS extract_columns ::: "$SUBFOLD"
   parallel $CORESCAPS columns_stats ::: "$SUBFOLD"
+  #parallel $CORESCAPS post_run_protein_pairs_stats ::: "$SUBFOLD"
+  cd ..
+done
+
+cd $TMP/$RESULTS/chi/proteinsFinal
+protInt=$( ls ./ )
+parallel $CORESCAPS calc_back_final ::: "$protInt"
+cd ..
+#coev_inter_chi_results_final
+
+cd $TMP/$RESULTS/coev/
+for resfold in * ; do
+  echo -e "Processing $resfold"
+  cd $resfold
+  SUBFOLD=$( ls ./ )
+parallel $CORESCAPS exp_column_stats ::: "$SUBFOLD"
   cd ..
 done
 
 summary_cleanup
 
-echo -e "\nDone with 12"
+#post_run_protein_pairs
+
+#mkdir -p $TMP/$RESULTS/pairs-P${PVALUE}-B${BONFERRONI}
+#cd $TMP/$RESULTS/pairs-P${PVALUE}-B${BONFERRONI}
+#pairzInt=$( ls ./ )
+#parallel $CORESCAPS post_run_protein_pairs_stats ::: "$pairzInt"
+#add_headers_pairz
+
+echo -e "\nDone with 13"
 ;;
 
 "[XML] Process CAPS results")
 write_xml
-echo -e "\nDone with 13"
+write_filtered_xml
+echo -e "\nDone with 14"
 ;;
 
 "[Exit script]")

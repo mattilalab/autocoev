@@ -1,0 +1,29 @@
+Name1:		Protein 1 name
+msa1:		Protein 1 UniProt ID
+Name2:		Protein 2 name
+msa2:		Protein 2 Uniprot ID
+colA:		Position of residue "A" from Protein 1 in the MSA
+realA:		Position of residue "A" from Protein 1 in the non-aligned sequence of the reference organism
+colB:		Position of residue "B" from Protein 2 in the MSA
+realB:		Position of residue "B" from Protein 3 in the non-aligned sequence of the reference organism
+seq1:		Position and amino-acid of residue "A" from Protein 1 in the non-aligned, non-filtered by gblocks sequence of the reference organism
+seq2:		Position and amino-acid of residue "A" from Protein 1 in the non-aligned, non-filtered by gblocks sequence of the reference organism
+meanA:		meanA
+meanB:		meanB
+corr:		Co-evolutionary correlation (non corrected)
+boot:		Bootstrap value of the correlation
+corrT:		Correlation threshold for each pair of proteins
+cCoev:		Co-evolutionary correlation (corrected, normalized to threshold)
+pvalA:		Correlation p-value for A->B (non-corrected)
+pvalB:		Correlation p-value for B->A (non-corrected)
+pMean:		Mean (pvalA + pvalB)/2 correlation p-value (non-corrected)
+pDiff:		Difference between pvalA-pvalB (absolute value)
+corr1:		Correlation for A->B (non-corrected)
+corr2:		Correlation for B->A (non-corrected)
+bonferroni:	Bonferroni corrected pMean
+GapA:		MSA column gaps (-) for residue "A"
+GapB:		MSA column gaps (-) for residue "B"
+GapAB:		Mean value of GapA and GapB
+DivA:		Diversity within MSA column for residue "A"
+DivB:		Diversity within MSA column for residue "B"
+DivAB:		Mean value of DivA and DivB

@@ -9,7 +9,7 @@ THREADMAFFT="--thread ${THREADS}"
 musclefn() {
   local SEQMSA="${1}"
   if [ -s $SEQMSA.fa ] ; then
-    $MSAMETHOD $MUSCLEOPTIONS > $TMP/$MSA/$MSAMETHOD/$SEQMSA.fa < $SEQMSA.fa
+    $MSAMETHOD $MUSCLEOPTIONS > $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD/$SEQMSA.fa < $SEQMSA.fa
   else
     echo -e "[\e[37mNOTINDB\e[39m] ${SEQMSA}"
   fi 
@@ -33,9 +33,9 @@ prankfn() {
   local SEQMSA="${1}"
   if [ -s $SEQMSA.fa ] ; then
     $MSAMETHOD $PRGUID $PRANKOPTIONS \
-      -o=$TMP/$MSA/$MSAMETHOD/$SEQMSA.fa \
+      -o=$TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD/$SEQMSA.fa \
       -d=$SEQMSA.fa
-    mv $TMP/$MSA/$MSAMETHOD/$SEQMSA.fa.best.fas $TMP/$MSA/$MSAMETHOD/$SEQMSA.fa
+    mv $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD/$SEQMSA.fa.best.fas $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD/$SEQMSA.fa
   else
     echo -e "[\e[37mNOTINDB\e[39m] ${SEQMSA}"
   fi 
@@ -45,7 +45,7 @@ prankfn() {
 mafftfn() {
   local SEQMSA="${1}"
   if [ -s $SEQMSA.fa ] ; then
-    $MSAMETHOD $MAFFTOPTIONS --anysymbol $SEQMSA.fa > $TMP/$MSA/$MSAMETHOD/$SEQMSA.fa
+    $MSAMETHOD $MAFFTOPTIONS --anysymbol $SEQMSA.fa > $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD/$SEQMSA.fa
   else
     echo -e "[\e[37mNOTINDB\e[39m] ${SEQMSA}"
   fi 

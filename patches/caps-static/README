@@ -1,0 +1,27 @@
+To use CAPS2 patched, you can just get the vCAPS-static, rename it to
+vCAPS and place it in your $PATH.
+
+The statically linked binary was built on CRUX 3.6.1 (https://crux.nu/),
+as follows:
+
+unzip caps2_src.zip
+cd caps2.0_src
+cp -a lib/ caps2.0_src
+cp Makefile.static caps2.0_src
+cd caps2.0_src
+patch -p1 -i ../01_caps_verbose.patch
+make -f Makefile.static
+
+Compiler flags used: "-O2 -fPIC -march=x86-64", in our experience -O3
+did not yield any significant performance improvement. Static libraries
+build on the same system:
+
+libbpp-numcalc.a (1.8.0): Bio++ 1.9 NumCalc Library
+libbpp-phyl.a (1.9.0) Bio++ 1.9 Phyl Library
+libbpp-seq.a (1.7.0) Bio++ 1.9 Seq Library
+libbpp-utils.a (1.5.0) Bio++ 1.9 Utils Library
+libc.a (2.32) The C library used in the GNU system
+libgsl.a (2.7.1) A numerical library for C and C++ programmers
+libgslcblas.a (2.7.1) A numerical library for C and C++ programmers
+libm.a (2.32) The C library used in the GNU system
+libstdc++.a (10.3.0) The GNU Compiler Collection

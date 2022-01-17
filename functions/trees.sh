@@ -3,7 +3,7 @@
 TREES="Trees"
 
 # Construct the folder where trees will be calculated
-MSATRETAG="${MSAMETHOD}-${PHYMLGUIDE}"
+MSATRETAG="$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD-${PHYMLGUIDE}"
 PHYMLCORES="--j ${THREADS}" # "12"
 
 # Trim the external tree following the species in each MSA. These can be
@@ -18,7 +18,7 @@ ext_trees(){
   done
   echo -e "Species names in the external tree changed to TAXID!"
   
-  cd $TMP/$MSA/$MSAMETHOD
+  cd $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD
   SUBSPEC=$( ls *.species )
   for spcs in ${SUBSPEC[@]} ; do
     treebest subtree $TMP/$TREES/external/$EXTTREE $spcs > $TMP/$TREES/external/noroot/${spcs%.*}.tre
@@ -37,7 +37,7 @@ phyml_ext(){
 }
 
 phyml_guide(){
-  cd $TMP/$MSA/$MSAMETHOD
+  cd $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD
   SUBSPEC=$( ls *.species )
   for spcs in ${SUBSPEC[@]} ; do
     treebest subtree $TMP/$TREES/phyml/$EXTTREE $spcs > $TMP/$TREES/phyml/ext/${spcs%.*}.tre
@@ -48,7 +48,7 @@ phyml_guide(){
 # Copy the necessary MSA files, converting them to PHYLIPI format.
 phyml_prep(){
   mkdir -p $TMP/$TREES/phyml/$MSATRETAG/phy/
-  cd $TMP/$MSA/$MSAMETHOD
+  cd $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD
   VANMSA=$(ls *.fa)
   for vmsa in ${VANMSA[@]} ; do
     squizz $vmsa -c PHYLIPI > $TMP/$TREES/phyml/$MSATRETAG/phy/${vmsa%.*}.phy

@@ -1,0 +1,25 @@
+Name1		Protein 1 name
+msa1		Protein 1 UniProt ID
+Name2		Protein 2 name
+msa2		Protein 2 Uniprot ID
+coevNumber	Number of coevolving pairs
+cCoevMIN	Minimum co-evolutionary correlation detected among pairs (corrected, normalized to threshold)
+cCoevMAX	Maximum co-evolutionary correlation detected among pairs (corrected, normalized to threshold)
+cCoevMEAN	Mean co-evolutionary correlation of all pairs (corrected, normalized to threshold)
+cCoevSDEV	Mean co-evolutionary correlation of all pairs standart deviation
+bootMIN		Minimum Bootstrap value detected among pairs
+bootMAX		Maximum Bootstrap value detected among pairs
+bootMEAN	Mean Bootstrap value of all pairs
+bootSDEV	Mean Bootstrap value of all pairs standart deviation
+pMeanMIN	Minimum correlation p-value detected among pairs (non-corrected)
+pMeanMAX	Maximum correlation p-value detected among pairs (non-corrected)
+pMeanMEAN	Mean correlation p-value of all pairs (non-corrected)
+pMeanSDEV	Mean correlation p-value of all pairs standart deviation (non-corrected)
+BonferroniMIN	Bonferroni corrected pMeanMIN
+BonferroniMAX	Bonferroni corrected pMeanMAX
+BonferroniMEAN	Bonferroni corrected pMeanMEAN
+BonferroniSDEV	Bonferroni corrected pMeanMEAN standart deviation
+gblocksMIN	Minimum Gblocks score (0, 0.5, 1) detected among pairs
+gblocksMAX	Maximum Gblocks score (0, 0.5, 1) detected among pairs
+gblocksMEAN	Mean Gblocks score (0, 0.5, 1) detected among pairs
+gblocksSDEV	Mean Gblocks score (0, 0.5, 1) detected among pairs standart deviation

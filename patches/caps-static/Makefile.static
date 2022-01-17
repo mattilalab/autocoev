@@ -1,0 +1,30 @@
+CC=g++ -g -static -static-libgcc -static-libstdc++
+CFLAGS=-O2 -fPIC -march=x86-64 #-W -Wall
+OPT=#-fast #-mtune=native #-ftree-vectorize -ffast-math #-funroll-loops
+MATH =-lm
+DEBUG=-g
+#BIOPHYL=-lbpp-phyl
+#BIONUC=-lbpp-numcalc
+#BIOUT=-lbpp-utils
+#BIOSEQ=-lbpp-seq
+STATLIBS=./lib/libgsl.a ./lib/libgslcblas.a ./lib/libbpp-phyl.a ./lib/libbpp-utils.a ./lib/libbpp-numcalc.a ./lib/libbpp-seq.a ./lib/libstdc++.a ./lib/libm.a ./lib/libc.a  
+RM=rm -f
+ARCH=#-arch i386
+#GSL=-lgsl -lgslcblas #-I/sw/include -L/sw/lib
+
+all:	BCFasta.o file_manip.o Blosum.o create.o caps 
+
+caps: caps.cpp file_manip.o create.o BCFasta.o Blosum.o
+	$(CC) $(CFLAGS) $(OPT)  -o vCAPS-static caps.cpp file_manip.o BCFasta.o create.o Blosum.o $(STATLIBS)
+Blosum.o: Blosum.cpp
+	$(CC) $(CFLAGS) $(OPT) -c Blosum.cpp -lm
+create.o: create.cpp
+	$(CC) $(OPT) $(CFLAGS) -c create.cpp -lm
+file_manip.o: file_manip.cpp
+	$(CC) $(OPT) $(CFLAGS) -c file_manip.cpp -lm
+BCFasta.o: BCFasta.cpp
+	$(CC) $(OPT) $(CFLAGS) -c BCFasta.cpp -lm
+clean:
+	$(RM) *.o *~ caps
+cleanout:
+	$(RM) *.o *~ caps *.csv *.out 

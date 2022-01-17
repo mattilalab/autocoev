@@ -4,15 +4,15 @@ MSASUFF="fa" # define MSA extension
 
 # Construct the PAIRS folder
 if [ "$TREESCAPS" = "phyml" ]; then
-  PAIRM="Pairs-${PAIRINGMANNER}/${MSAMETHOD}..PhyML_${PHYMLGUIDE}-${TREESROOT}"
-  PAIRL="Pairs-${PAIRINGMANNER}-excluded/${MSAMETHOD}..PhyML_${PHYMLGUIDE}${TREESROOT}"
-  CAPSM="CAPS-${PAIRINGMANNER}/${MSAMETHOD}..PhyML_${PHYMLGUIDE}-${TREESROOT}/Alpha${ALPHA}"
-  RESULTS="Results-${PAIRINGMANNER}/${MSAMETHOD}..PhyML_${PHYMLGUIDE}-${TREESROOT}/Alpha${ALPHA}"
+  PAIRM="Pairs-${PAIRINGMANNER}/$GUIDANCEMSA-$GUIDANCECUT-${MSAMETHOD}..PhyML_${PHYMLGUIDE}-${TREESROOT}"
+  PAIRL="Pairs-${PAIRINGMANNER}-excluded/$GUIDANCEMSA-$GUIDANCECUT-${MSAMETHOD}..PhyML_${PHYMLGUIDE}${TREESROOT}"
+  CAPSM="CAPS-${PAIRINGMANNER}/$GUIDANCEMSA-$GUIDANCECUT-${MSAMETHOD}..PhyML_${PHYMLGUIDE}-${TREESROOT}/Alpha${ALPHA}"
+  RESULTS="Results-${PAIRINGMANNER}/$GUIDANCEMSA-$GUIDANCECUT-${MSAMETHOD}..PhyML_${PHYMLGUIDE}-${TREESROOT}/Alpha${ALPHA}"
 elif [ "$TREESCAPS" = "auto" ]; then
-  PAIRM="Pairs-${PAIRINGMANNER}/${MSAMETHOD}..TREE_auto"
-  PAIRL="Pairs-${PAIRINGMANNER}-excluded/${MSAMETHOD}..TREE_auto"
-  CAPSM="CAPS-${PAIRINGMANNER}/${MSAMETHOD}..TREE_auto/Alpha${ALPHA}"
-  RESULTS="Results-${PAIRINGMANNER}/${MSAMETHOD}..TREE_auto/Alpha${ALPHA}"
+  PAIRM="Pairs-${PAIRINGMANNER}/$GUIDANCEMSA-$GUIDANCECUT-${MSAMETHOD}..TREE_auto"
+  PAIRL="Pairs-${PAIRINGMANNER}-excluded/$GUIDANCEMSA-$GUIDANCECUT-${MSAMETHOD}..TREE_auto"
+  CAPSM="CAPS-${PAIRINGMANNER}/$GUIDANCEMSA-$GUIDANCECUT-${MSAMETHOD}..TREE_auto/Alpha${ALPHA}"
+  RESULTS="Results-${PAIRINGMANNER}/$GUIDANCEMSA-$GUIDANCECUT-${MSAMETHOD}..TREE_auto/Alpha${ALPHA}"
 else
   echo -e "Check your CAPS trees settings ($TREESCAPS)!"
 fi
@@ -30,7 +30,7 @@ pair_msa() {
   echo -e "Protein1\tProtein2\tCommon" > $TMP/tsv/pairsGood.tsv
   echo -e "Protein1\tProtein2\tCommon" > $TMP/tsv/pairsBad.tsv
 
-  cd $TMP/$MSA/$MSAMETHOD
+  cd $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD
   MSALIST=$(ls *.${MSASUFF})
 
   for i in ${MSALIST[@]} ; do
@@ -38,19 +38,19 @@ pair_msa() {
     for j in ${MSALIST[@]} ; do
       namj=$(basename $j .${MSASUFF})
       if [ "$i" \< "$j" ]; then
-        COMMONSPECIES=$(seqkit --threads ${THREADS} common $TMP/$MSA/$MSAMETHOD/$i $TMP/$MSA/$MSAMETHOD/$j | seqkit --threads ${THREADS} seq -n | wc -l)
+        COMMONSPECIES=$(seqkit --threads ${THREADS} common $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD/$i $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD/$j | seqkit --threads ${THREADS} seq -n | wc -l)
         if [ "$COMMONSPECIES" -ge "$MINCOMMONSPCS" ]; then
           mkdir -p $TMP/$PAIRM/${nami}_vs_${namj}/msa
-          seqkit --threads ${THREADS} common $TMP/$MSA/$MSAMETHOD/$i $TMP/$MSA/$MSAMETHOD/$j -o $TMP/$PAIRM/${nami}_vs_${namj}/msa/$nami.fa
-          seqkit --threads ${THREADS} common $TMP/$MSA/$MSAMETHOD/$j $TMP/$MSA/$MSAMETHOD/$i -o $TMP/$PAIRM/${nami}_vs_${namj}/msa/$namj.fa
+          seqkit --threads ${THREADS} common $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD/$i $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD/$j -o $TMP/$PAIRM/${nami}_vs_${namj}/msa/$nami.fa
+          seqkit --threads ${THREADS} common $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD/$j $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD/$i -o $TMP/$PAIRM/${nami}_vs_${namj}/msa/$namj.fa
           seqkit --threads ${THREADS} seq $TMP/$PAIRM/${nami}_vs_${namj}/msa/$nami.fa -n > $TMP/$PAIRM/${nami}_vs_${namj}/$nami.species
           seqkit --threads ${THREADS} seq $TMP/$PAIRM/${nami}_vs_${namj}/msa/$namj.fa -n > $TMP/$PAIRM/${nami}_vs_${namj}/$namj.species
           echo -e "[\e[92mMORE\e[39m] Paired MSA ($MSAMETHOD): ${nami} and ${namj}"
           echo -e "$nami\t$namj\t$COMMONSPECIES" >> $TMP/tsv/pairsGood.tsv
         elif [ "$COMMONSPECIES" -lt "$MINCOMMONSPCS" ]; then
           mkdir -p $TMP/$PAIRL/${nami}_vs_${namj}/msa
-          seqkit --threads ${THREADS} common $TMP/$MSA/$MSAMETHOD/$i $TMP/$MSA/$MSAMETHOD/$j -o $TMP/$PAIRL/${nami}_vs_${namj}/msa/$nami.fa
-          seqkit --threads ${THREADS} common $TMP/$MSA/$MSAMETHOD/$j $TMP/$MSA/$MSAMETHOD/$i -o $TMP/$PAIRL/${nami}_vs_${namj}/msa/$namj.fa
+          seqkit --threads ${THREADS} common $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD/$i $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD/$j -o $TMP/$PAIRL/${nami}_vs_${namj}/msa/$nami.fa
+          seqkit --threads ${THREADS} common $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD/$j $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD/$i -o $TMP/$PAIRL/${nami}_vs_${namj}/msa/$namj.fa
           seqkit --threads ${THREADS} seq $TMP/$PAIRL/${nami}_vs_${namj}/msa/$nami.fa -n > $TMP/$PAIRL/${nami}_vs_${namj}/$nami.species
           seqkit --threads ${THREADS} seq $TMP/$PAIRL/${nami}_vs_${namj}/msa/$namj.fa -n > $TMP/$PAIRL/${nami}_vs_${namj}/$namj.species
           echo -e "[\e[37mLESS\e[39m] Paired MSA ($MSAMETHOD): ${nami} and ${namj}"
@@ -69,24 +69,24 @@ pair_defined_msa() {
   echo -e "Protein1\tProtein2\tCommon" > $TMP/tsv/pairsGood.tsv
   echo -e "Protein1\tProtein2\tCommon" > $TMP/tsv/pairsBad.tsv
 
-  cd $TMP/$MSA/$MSAMETHOD
+  cd $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD
   while read -r nami namj ; do
     i="${nami}.${MSASUFF}"
     j="${namj}.${MSASUFF}"
     if [ -f "$i" ] && [ -f "$j" ]; then
-      COMMONSPECIES=$(seqkit --threads ${THREADS} common $TMP/$MSA/$MSAMETHOD/$i $TMP/$MSA/$MSAMETHOD/$j | seqkit --threads ${THREADS} seq -n | wc -l)
+      COMMONSPECIES=$(seqkit --threads ${THREADS} common $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD/$i $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD/$j | seqkit --threads ${THREADS} seq -n | wc -l)
       if [ "$COMMONSPECIES" -ge "$MINCOMMONSPCS" ]; then
         mkdir -p $TMP/$PAIRM/${nami}_vs_${namj}/msa
-        seqkit --threads ${THREADS} common $TMP/$MSA/$MSAMETHOD/$i $TMP/$MSA/$MSAMETHOD/$j -o $TMP/$PAIRM/${nami}_vs_${namj}/msa/$nami.fa
-        seqkit --threads ${THREADS} common $TMP/$MSA/$MSAMETHOD/$j $TMP/$MSA/$MSAMETHOD/$i -o $TMP/$PAIRM/${nami}_vs_${namj}/msa/$namj.fa
+        seqkit --threads ${THREADS} common $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD/$i $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD/$j -o $TMP/$PAIRM/${nami}_vs_${namj}/msa/$nami.fa
+        seqkit --threads ${THREADS} common $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD/$j $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD/$i -o $TMP/$PAIRM/${nami}_vs_${namj}/msa/$namj.fa
         seqkit --threads ${THREADS} seq $TMP/$PAIRM/${nami}_vs_${namj}/msa/$nami.fa -n > $TMP/$PAIRM/${nami}_vs_${namj}/$nami.species
         seqkit --threads ${THREADS} seq $TMP/$PAIRM/${nami}_vs_${namj}/msa/$namj.fa -n > $TMP/$PAIRM/${nami}_vs_${namj}/$namj.species
         echo -e "[\e[92mMORE\e[39m] Paired MSA ($MSAMETHOD): ${nami} and ${namj}"
         echo -e "$nami\t$namj\t$COMMONSPECIES" >> $TMP/tsv/pairsGood.tsv
       elif [ "$COMMONSPECIES" -lt "$MINCOMMONSPCS" ]; then
         mkdir -p $TMP/$PAIRL/${nami}_vs_${namj}/msa
-        seqkit --threads ${THREADS} common $TMP/$MSA/$MSAMETHOD/$i $TMP/$MSA/$MSAMETHOD/$j -o $TMP/$PAIRL/${nami}_vs_${namj}/msa/$nami.fa
-        seqkit --threads ${THREADS} common $TMP/$MSA/$MSAMETHOD/$j $TMP/$MSA/$MSAMETHOD/$i -o $TMP/$PAIRL/${nami}_vs_${namj}/msa/$namj.fa
+        seqkit --threads ${THREADS} common $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD/$i $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD/$j -o $TMP/$PAIRL/${nami}_vs_${namj}/msa/$nami.fa
+        seqkit --threads ${THREADS} common $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD/$j $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD/$i -o $TMP/$PAIRL/${nami}_vs_${namj}/msa/$namj.fa
         seqkit --threads ${THREADS} seq $TMP/$PAIRL/${nami}_vs_${namj}/msa/$nami.fa -n > $TMP/$PAIRL/${nami}_vs_${namj}/$nami.species
         seqkit --threads ${THREADS} seq $TMP/$PAIRL/${nami}_vs_${namj}/msa/$namj.fa -n > $TMP/$PAIRL/${nami}_vs_${namj}/$namj.species
         echo -e "[\e[37mLESS\e[39m] Paired MSA ($MSAMETHOD): ${nami} and ${namj}"
