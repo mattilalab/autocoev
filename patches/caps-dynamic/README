@@ -2,7 +2,6 @@ Install cmake and gsl:
 sudo apt install cmake
 sudo apt install libgsl-dev
 
-
 The BppSuite components are installed in /usr/local, so they do not
 conflict with their modern versions. You _should not_ have the modern
 ones installed at CAPS2 build time, since it may get linked to them,
