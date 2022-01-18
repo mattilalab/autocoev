@@ -54,7 +54,7 @@ ln -s ../../lib/mafft/mafft-linsi .
 # https://seafile.utu.fi/d/a8de85062abf4ab68de9/
 # Then extract and place in its proper location:
 tar xvf odb10v1_all_fasta.tab.index.tar.gz
-mv odb10v1_all_fasta.tab.index.tar.gz /var/tmp/DB10v1
+mv odb10v1_all_fasta.tab.index /var/tmp/DB10v1
 
 
 ## Patches
