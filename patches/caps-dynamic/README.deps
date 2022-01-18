@@ -1,13 +1,9 @@
 # Install programs that AutoCoEv drives, available as packages:
 sudo apt install muscle mafft datamash ncbi-blast+ exonerate prank squizz parallel phyml
 
-# Guidance needs this, which has a huge list of deps:
+# Build Guidance (http://guidance.tau.ac.il/)
 sudo apt install bioperl
-
-# Get Guidance (2.02)
 wget http://guidance.tau.ac.il/guidance.v2.02.tar.gz
-
-# Install guidance:
 tar xvf guidance.v2.02.tar.gz
 cd guidance.v2.02
 make
@@ -15,14 +11,22 @@ cd ..
 
 # I know /usr/local is better, I'll modify AutoCoEv to search there, too.
 # For now, place it here:
-cp -a guidance.v2.02 /usr/lib/guidance
+sudo cp -a guidance.v2.02 /usr/lib/guidance
 
 # Get Gblocks (http://molevol.cmima.csic.es/castresana/Gblocks.html):
 wget http://molevol.cmima.csic.es/castresana/Gblocks/Gblocks_Linux64_0.91b.tar.Z
 tar xvf Gblocks_Linux64_0.91b.tar.Z
-cp Gblocks_0.91b/Gblocks /usr/local/bin
+sudo cp Gblocks_0.91b/Gblocks /usr/local/bin
 
 # Get SeqKit (https://bioinf.shenwei.me/seqkit/)
 wget https://github.com/shenwei356/seqkit/releases/download/v2.1.0/seqkit_linux_amd64.tar.gz
 tar xvf seqkit_linux_amd64.tar.gz
-cp seqkit /usr/local/bin
+sudo cp seqkit /usr/local/bin
+
+# Build TreeBeST Ensembl mod (https://github.com/Ensembl/treebest/)
+sudo apt install flex bison
+wget https://github.com/Ensembl/treebest/archive/347fa82/treebest-347fa82a0ce1c169849053fdc9ff7d19d221f290.tar.gz
+tar xvf treebest-347fa82a0ce1c169849053fdc9ff7d19d221f290.tar.gz
+cd treebest-347fa82a0ce1c169849053fdc9ff7d19d221f290
+make
+sudo cp treebest /usr/local/bin
