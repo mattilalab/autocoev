@@ -30,3 +30,13 @@ tar xvf treebest-347fa82a0ce1c169849053fdc9ff7d19d221f290.tar.gz
 cd treebest-347fa82a0ce1c169849053fdc9ff7d19d221f290
 make
 sudo cp treebest /usr/local/bin
+
+# AutoCoEv uses phyml executable directly, not through the wrapper
+# provided by Debian/Ubuntu. Therefore, make a symlink:
+cd /usr/local/bin
+ln -s ../../lib/phyml/bin/phyml .
+
+# AutoCoEv expects to find MAFFT aliases in your $PATH. Either add
+# /usr/lib/mafft/bin to your $PATH or create symlinks, like this:
+cd /usr/local/bin
+ln -s ../../lib/mafft/mafft-linsi .
