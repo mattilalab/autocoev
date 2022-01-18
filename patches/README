@@ -47,6 +47,16 @@ cd /usr/local/bin
 ln -s ../../lib/mafft/mafft-linsi .
 
 
+# It has come to my attention, that fastaindex produces an empty file on
+# Debian and Ubuntu (at least in a virtual machine). I am trying to
+# resolve the issue at the moment. If you have this problem, download
+# the indexed database 'odb10v1_all_fasta.tab.index.tar.gz' from:
+# https://seafile.utu.fi/d/a8de85062abf4ab68de9/
+# Then extract and place in its proper location:
+tar xvf odb10v1_all_fasta.tab.index.tar.gz
+mv odb10v1_all_fasta.tab.index.tar.gz /var/tmp/DB10v1
+
+
 ## Patches
 
 # 01_caps_verbose.patch
