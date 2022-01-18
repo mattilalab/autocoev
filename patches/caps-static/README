@@ -9,7 +9,7 @@ cd caps2.0_src
 cp -a lib/ caps2.0_src
 cp Makefile.static caps2.0_src
 cd caps2.0_src
-patch -p1 -i ../01_caps_verbose.patch
+patch -p1 -i ../caps_verbose.patch
 make -f Makefile.static
 
 Compiler flags used: "-O2 -fPIC -march=x86-64", in our experience -O3

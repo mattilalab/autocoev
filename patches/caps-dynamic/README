@@ -1,12 +1,22 @@
-Install cmake and gsl:
+# Instructions to build patched CAPS2 on Debian/Ubuntu, tested on
+# Ubunto 20.04. Sources are provided in the current folder, but can be
+# obtained from here:
+wget http://biopp.univ-montp2.fr/repos/sources/bpp-utils-1.5.0.tar.gz
+wget http://biopp.univ-montp2.fr/repos/sources/bpp-numcalc-1.8.0.tar.gz
+wget http://biopp.univ-montp2.fr/repos/sources/bpp-seq-1.7.0.tar.gz
+wget http://biopp.univ-montp2.fr/repos/sources/bpp-phyl-1.9.0.tar.gz
+
+wget http://bioinf.gen.tcd.ie/~faresm/software/files/caps2_src.zip
+
+# The BppSuite components are installed in /usr/local, so they do not
+# conflict with their modern versions. You _should not_ have the modern
+# ones installed at CAPS2 build time, since it may get linked to them,
+# instead. Build the bppSuite components in the exact order:
+
+# Install cmake and gsl:
 sudo apt install cmake
-sudo apt install libgsl-dev
 
-The BppSuite components are installed in /usr/local, so they do not
-conflict with their modern versions. You _should not_ have the modern
-ones installed at CAPS2 build time, since it may get linked to them,
-instead. Build the bppSuite components in the exact order:
-
+tar xvf bpp-utils-1.5.0.tar.gz
 cd bpp-utils-1.5.0
 sed -i "s:file;:file.good();:g" Utils/FileTools.cpp
 sed -i "s:/lib/:/lib/Bpp1.9/:g" Utils.spec
@@ -18,6 +28,7 @@ sed -i "s:Bpp1.9/Bpp1.9:Bpp1.9:g" Utils/cmake_install.cmake
 make
 sudo make install
 
+tar xvf bpp-numcalc-1.8.0.tar.gz
 cd bpp-numcalc-1.8.0
 export PATH="/usr/local/lib/Bpp1.9/:$PATH"
 sed -i "s:/lib/:/lib/Bpp1.9/:g" NumCalc.spec
@@ -29,6 +40,7 @@ sed -i "s:Bpp1.9/Bpp1.9:Bpp1.9:g" NumCalc/cmake_install.cmake
 make
 sudo make install
 
+tar xvf bpp-seq-1.7.0.tar.gz
 cd bpp-seq-1.7.0
 export PATH="/usr/local/lib/Bpp1.9/:$PATH"
 sed -i "s:/lib/:/lib/Bpp1.9/:g" Seq.spec
@@ -40,6 +52,7 @@ sed -i "s:Bpp1.9/Bpp1.9:Bpp1.9:g" Seq/cmake_install.cmake
 make
 sudo make install
 
+tar xvf bpp-phyl-1.9.0.tar.gz
 cd bpp-phyl-1.9.0
 patch -p1 -i ../../caps_TreeTemplateTools.patch
 export PATH="/usr/local/lib/Bpp1.9/:$PATH"
@@ -52,10 +65,10 @@ sed -i "s:Bpp1.9/Bpp1.9:Bpp1.9:g" Phyl/cmake_install.cmake
 make
 sudo make install
 
-
-Build CAPS2:
-
+# Build CAPS2:
+sudo apt install libgsl-dev
 cd caps2.0_src
 cp Makefile.debian .
-patch ../../01_caps_verbose.patch
+patch ../../caps_verbose.patch
 make -f Makefile.debian
+sudo cp vCAPS /usr/local/bin

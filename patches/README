@@ -1,7 +1,7 @@
-# Install CAPS , either as dynamic or static binary. Then, install the
-# rest of the programs that AutoCoEv drives. below are instructions for
-# Debian/Ubuntu, tested on Ubuntu 20.04 (LTS). For the programs, not
-# available as packages, you may wish to check the corresponding web-
+# Install CAPS, either as dynamic or static binary. Then, install the
+# rest of the programs that AutoCoEv drives. Below are instructions for
+# Debian/Ubuntu, tested on Ubuntu 20.04 (LTS). For the programs that are
+# not available as packages, you may wish to check the corresponding web-
 # sites to get the latest versions. Patches are discussed in the bottom.
 
 # These are available as packages:
@@ -48,23 +48,8 @@ ln -s ../../lib/mafft/mafft-linsi .
 
 
 ## Patches
-1) caps_TreeTemplateTools.patch
-patch for bpp-phyl v1.9.0 to work with CAPS2
-http://biopp.univ-montp2.fr/repos/sources/bpp-phyl-1.9.0.tar.gz
 
-When phylogenetic trees are not supplied by the user, CAPS generates its
-own trees automatically:
-
-tree1 = create_input_tree(vec1.names, vec1.sequences);
-tree2 = create_input_tree(vec2.names, vec2.sequences);
-
-Our patch simply outputs the trees by treeToParenthesis:
-
-string temptre1 = TreeTemplateTools::treeToParenthesis(*tree1, true);
-string temptre2 = TreeTemplateTools::treeToParenthesis(*tree2, true);
-
-
-2) caps_verbose.patch
+# 01_caps_verbose.patch
 patch for CAPS v2 to produce more verbose output
 http://bioinf.gen.tcd.ie/~faresm/software/files/caps2_src.zip
 
@@ -124,3 +109,19 @@ double Pvalue2 = getIndex(totaltemp, Correl2[cor]);
 
 The patched executable of CAPS is installed as "vCAPS", so it can be
  installed along the the official binary "caps" provided by upstream.
+
+
+# caps_TreeTemplateTools.patch
+patch for bpp-phyl v1.9.0 to work with CAPS2
+http://biopp.univ-montp2.fr/repos/sources/bpp-phyl-1.9.0.tar.gz
+
+When phylogenetic trees are not supplied by the user, CAPS generates its
+own trees automatically:
+
+tree1 = create_input_tree(vec1.names, vec1.sequences);
+tree2 = create_input_tree(vec2.names, vec2.sequences);
+
+Our patch simply outputs the trees by treeToParenthesis:
+
+string temptre1 = TreeTemplateTools::treeToParenthesis(*tree1, true);
+string temptre2 = TreeTemplateTools::treeToParenthesis(*tree2, true);
