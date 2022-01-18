@@ -29,6 +29,9 @@ VER="0.1.1beta" # version
 . $CWD/functions/check.sh
 . $CWD/functions/chi2.sh
 
+# Make sure we have the right decimal separator...
+export LC_ALL=C
+
 # User provided input
 echo -e "\nWelcome to \e[46m${NAME} version ${VER}!\e[49m $DATESTAMP\n"
 
