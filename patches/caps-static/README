@@ -1,5 +1,5 @@
 To use CAPS2 patched, you can just get the vCAPS-static, rename it to
-vCAPS and place it in your $PATH.
+vCAPS and place it in your $PATH. Check ../caps-dynamic for sources.
 
 The statically linked binary was built on CRUX 3.6.1 (https://crux.nu/),
 as follows:
@@ -17,7 +17,7 @@ did not yield any significant performance improvement. Static libraries
 build on the same system:
 
 libbpp-numcalc.a (1.8.0): Bio++ 1.9 NumCalc Library
-libbpp-phyl.a (1.9.0) Bio++ 1.9 Phyl Library
+libbpp-phyl.a (1.9.0) Bio++ 1.9 Phyl Library + caps_TreeTemplateTools.patch
 libbpp-seq.a (1.7.0) Bio++ 1.9 Seq Library
 libbpp-utils.a (1.5.0) Bio++ 1.9 Utils Library
 libc.a (2.32) The C library used in the GNU system
