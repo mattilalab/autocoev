@@ -1,0 +1,11 @@
+02_chi_verbose.patch -- this patch makes CAPS2 output values related to
+its chi^2 test. It was temporarilly used when preparing AutoCoEv's own
+Chi^2 test functions in chi2.sh.
+
+extraVerbose.patch -- this patch will save the contents of the totaltemp
+vector to a text file. This may be desired if you wish to inspect the
+simulated data. Be warned that the size of the generated files can be
+hundreds ot MB or even more!!
+
+[!!! WARNING !!!]
+DO NOT USE THE PATCH WITH AUTOCOEV -- YOU WILL FILL YOUR HARD DRIVE.

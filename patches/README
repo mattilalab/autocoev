@@ -1,3 +1,53 @@
+# Install CAPS , either as dynamic or static binary. Then, install the
+# rest of the programs that AutoCoEv drives. below are instructions for
+# Debian/Ubuntu, tested on Ubuntu 20.04 (LTS). For the programs, not
+# available as packages, you may wish to check the corresponding web-
+# sites to get the latest versions. Patches are discussed in the bottom.
+
+# These are available as packages:
+sudo apt install muscle mafft datamash ncbi-blast+ exonerate prank squizz parallel phyml
+
+# Build Guidance (http://guidance.tau.ac.il/)
+sudo apt install bioperl
+wget http://guidance.tau.ac.il/guidance.v2.02.tar.gz
+tar xvf guidance.v2.02.tar.gz
+cd guidance.v2.02
+make
+cd ..
+
+# I know /usr/local/lib is better, but for now place it here:
+sudo cp -a guidance.v2.02 /usr/lib/guidance
+
+# Get Gblocks (http://molevol.cmima.csic.es/castresana/Gblocks.html):
+wget http://molevol.cmima.csic.es/castresana/Gblocks/Gblocks_Linux64_0.91b.tar.Z
+tar xvf Gblocks_Linux64_0.91b.tar.Z
+sudo cp Gblocks_0.91b/Gblocks /usr/local/bin
+
+# Get SeqKit (https://bioinf.shenwei.me/seqkit/)
+wget https://github.com/shenwei356/seqkit/releases/download/v2.1.0/seqkit_linux_amd64.tar.gz
+tar xvf seqkit_linux_amd64.tar.gz
+sudo cp seqkit /usr/local/bin
+
+# Build TreeBeST Ensembl mod (https://github.com/Ensembl/treebest/)
+sudo apt install flex bison
+wget https://github.com/Ensembl/treebest/archive/347fa82/treebest-347fa82a0ce1c169849053fdc9ff7d19d221f290.tar.gz
+tar xvf treebest-347fa82a0ce1c169849053fdc9ff7d19d221f290.tar.gz
+cd treebest-347fa82a0ce1c169849053fdc9ff7d19d221f290
+make
+sudo cp treebest /usr/local/bin
+
+# AutoCoEv uses phyml executable directly, not through the wrapper
+# provided by Debian/Ubuntu. Therefore, make a symlink:
+cd /usr/local/bin
+ln -s ../../lib/phyml/bin/phyml .
+
+# AutoCoEv expects to find MAFFT aliases in your $PATH. Either add
+# /usr/lib/mafft/bin to your $PATH or create symlinks, like this:
+cd /usr/local/bin
+ln -s ../../lib/mafft/mafft-linsi .
+
+
+## Patches
 1) caps_TreeTemplateTools.patch
 patch for bpp-phyl v1.9.0 to work with CAPS2
 http://biopp.univ-montp2.fr/repos/sources/bpp-phyl-1.9.0.tar.gz
@@ -74,10 +124,3 @@ double Pvalue2 = getIndex(totaltemp, Correl2[cor]);
 
 The patched executable of CAPS is installed as "vCAPS", so it can be
  installed along the the official binary "caps" provided by upstream.
- 
-3) extraVerbose.patch
-This will save the contents of the totaltemp vector to a text file. This
-may be desired if you wish to inspect the simulated data. Be warned that
-the size of the generated files can be hundreds ot MB or even more!!
-
-DO NOT USE THE PATCH WITH AUTOCOEV -- YOU WILL FILL YOUR HARD DRIVE.
