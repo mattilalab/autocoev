@@ -1,4 +1,5 @@
-# Install programs that AutoCoEv drives, available as packages:
+# Install rest of the programs that AutoCoEv drives.
+# These are available as packages in Debian and Ubuntu:
 sudo apt install muscle mafft datamash ncbi-blast+ exonerate prank squizz parallel phyml
 
 # Build Guidance (http://guidance.tau.ac.il/)
