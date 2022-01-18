@@ -5,7 +5,7 @@
 # sites to get the latest versions. Patches are discussed in the bottom.
 
 # These are available as packages:
-sudo apt install muscle mafft datamash ncbi-blast+ exonerate prank squizz parallel phyml
+sudo apt install muscle mafft datamash ncbi-blast+ exonerate prank squizz parallel phyml r-base
 
 # Build Guidance (http://guidance.tau.ac.il/)
 sudo apt install bioperl
