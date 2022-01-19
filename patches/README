@@ -7,8 +7,9 @@
 # These are available as packages:
 sudo apt install muscle mafft datamash ncbi-blast+ exonerate prank squizz parallel phyml r-base
 
-# Build Guidance (http://guidance.tau.ac.il/)
+# Build Guidance (http://guidance.tau.ac.il/) it needs BioPerl and co:
 sudo apt install bioperl
+sudo apt install libbio-coordinate-perl libbio-db-ace-perl libbio-eutilities-perl libbio-procedural-perl libbio-samtools-perl
 wget http://guidance.tau.ac.il/guidance.v2.02.tar.gz
 tar xvf guidance.v2.02.tar.gz
 cd guidance.v2.02
