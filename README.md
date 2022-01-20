@@ -13,3 +13,7 @@ Protein-protein communications govern cellular processes via complex regulatory 
 
 --
 * Requests for the scripts should be addressed to Petar Petrov (pebope ат utu.fi)
+
+
+**The 'main' branch is currently under development and things may break.**
+**Get the latest release if you want to give AutoCoEv an try!**
