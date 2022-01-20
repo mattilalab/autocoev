@@ -114,17 +114,17 @@ results_cleanup() {
        fcorrdec=$(printf "%1.10f" $corr)
       fcorr1dec=$(printf "%1.10f" $corr1)
       fcorr2dec=$(printf "%1.10f" $corr2)
-      fpvalAdec=$(printf "%1.10f" $pvalA)
-      fpvalBdec=$(printf "%1.10f" $pvalB)
+      #fpvalAdec=$(printf "%1.10f" $pvalA)
+      #fpvalBdec=$(printf "%1.10f" $pvalB)
       fpMeandec=$(printf "%1.10f" $pMean)
     
       # Define rev
-       rcorrdec=$(echo $rowmatch | awk '{print $9}')
-      rcorr1dec=$(echo $rowmatch | awk '{print $14}')
-      rcorr2dec=$(echo $rowmatch | awk '{print $15}')
-      rpvalAdec=$(echo $rowmatch | awk '{print $11}')
-      rpvalBdec=$(echo $rowmatch | awk '{print $12}')
-      rpMeandec=$(echo $rowmatch | awk '{print $13}')
+       rcorrdec=$(printf "%1.10f" `echo $rowmatch | awk '{print $9}'`)
+      rcorr1dec=$(printf "%1.10f" `echo $rowmatch | awk '{print $14}'`)
+      rcorr2dec=$(printf "%1.10f" `echo $rowmatch | awk '{print $15}'`)
+      #rpvalAdec=$(printf "%1.10f" `echo $rowmatch | awk '{print $11}'`)
+      #rpvalBdec=$(printf "%1.10f" `echo $rowmatch | awk '{print $12}'`)
+      rpMeandec=$(printf "%1.10f" `echo $rowmatch | awk '{print $13}'`)
   
       # Make sure we use reliable values
       if (( $(echo "$fpMeandec <= $PVALUE" |bc -l) && $(echo "$rpMeandec <= $PVALUE" |bc -l) && \
@@ -132,15 +132,16 @@ results_cleanup() {
 	  $(echo "$rcorr2dec > 0" |bc -l) && $(echo "$rcorr2dec > 0" |bc -l) )); then
 	  
 	  corrdec=$(printf "${fcorrdec}\n $rcorrdec" | datamash mean 1)
-         corr1dec=$(printf "${fcorr1dec}\n $rcorr1dec" | datamash mean 1)
-         corr2dec=$(printf "${fcorr2dec}\n $rcorr2dec" | datamash mean 1)
-         pvalAdec=$(printf "${fpvalAdec}\n $rpvalAdec" | datamash mean 1)
-         pvalBdec=$(printf "${fpvalBdec}\n $rpvalBdec" | datamash mean 1)
+         #corr1dec=$(printf "${fcorr1dec}\n $rcorr1dec" | datamash mean 1)
+         #corr2dec=$(printf "${fcorr2dec}\n $rcorr2dec" | datamash mean 1)
+         #pvalAdec=$(printf "${fpvalAdec}\n $rpvalAdec" | datamash mean 1)
+         #pvalBdec=$(printf "${fpvalBdec}\n $rpvalBdec" | datamash mean 1)
          pMeandec=$(printf "${fpMeandec}\n $rpMeandec" | datamash mean 1)
       
         echo "Adding $pMeandec"
-        echo "$msa1 $msa2 $colA $realA $colB $realB $meanA $meanB $corrdec $boot $pvalAdec $pvalBdec $pMeandec $corr1dec $corr2dec" >> bothWays.clean
-      
+        #echo "$msa1 $msa2 $colA $realA $colB $realB $meanA $meanB $corrdec $boot $pvalAdec $pvalBdec $pMeandec $corr1dec $corr2dec" >> bothWays.tsv
+        echo "$msa1 $msa2 $colA $realA $colB $realB $corrdec $boot $pMeandec" >> bothWays.tsv
+	
        elif (( $(echo "$fpMeandec <= $PVALUE" |bc -l) || $(echo "$rpMeandec <= $PVALUE" |bc -l) || \
     	  $(echo "$fcorr1dec > 0" |bc -l) || $(echo "$rcorr1dec > 0" |bc -l) || \
 	  $(echo "$rcorr2dec > 0" |bc -l) || $(echo "$rcorr2dec > 0" |bc -l) )); then
@@ -152,6 +153,9 @@ results_cleanup() {
       echo "Did not find a match bothways: $rowmatch"
     fi
     done
+    
+    #sed -i "1i msa1 msa2 colA realA colB realB meanA meanB corr boot pvalA pvalB pMean corr1 corr2" bothWays.tsv
+    sed -i "1i msa1 msa2 colA realA colB realB corr boot p_value" bothWays.tsv
     cd ..  
 }
 
