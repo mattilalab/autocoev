@@ -2,8 +2,9 @@
 
 # CAPS executable
 #CAPS=caps
-CAPS=vCAPS
+#CAPS=vCAPS
 
+CAPS=vCAPS-static-sort
 # Number of threads to use for CAPS
 CORESCAPS="--j ${THREADS}"
 
