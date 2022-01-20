@@ -35,7 +35,7 @@ capsfn() {
     ${REFER} \
     ${CAPSOPTIONS} \
     ${TREMSA} \
-    -F ./msa 2> log.txt
+    -F ./$msa 2> log-$msa.txt
   cd ..
   echo -e Processed "$PAIR"
   echo "$PAIR" >> $TMP/progress-$ALPHA-$MSAMETHOD-$TREESCAPS.txt

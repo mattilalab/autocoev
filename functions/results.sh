@@ -27,11 +27,31 @@ local pair="${1}"
       echo "$Seq1 $Seq2 $numPairs $totalComp $CutOff $thresholdR $averageR $averageSigR $tree1length $tree2length $gapThreshold $bootCutOff $DistanceCoef" >> $TMP/$RESULTS/coev_inter_coev.tsv
       mkdir -p $TMP/$RESULTS/coev/$folder
       cp -a $pair $TMP/$RESULTS/coev/$folder
+      
+      # Prepare the "reversed" MSA, so we run CAPS the other way round
+      mv $TMP/$RESULTS/coev/$folder/$pair/coev_inter.csv $TMP/$RESULTS/coev/$folder/$pair/${Seq1}_${Seq2}-coev_inter.csv
+      cd $TMP/$RESULTS/coev/$folder/$pair/msa
+      firstMSA=$(ls | sed -n '1p')
+     secondMSA=$(ls | sed -n '2p')
+     mkdir -p ../msa-rev
+     cp $firstMSA ../msa-rev/b_${firstMSA}
+     cp $secondMSA ../msa-rev/a_${secondMSA}
+    
     else
       echo -e "Something went wrong for $pair ... Check!"
     fi
   done <<< $(echo "$SUMMARY")
 }
+
+# caps_second(){
+# local pair="${1}"
+#   cd $pair/msa
+#    firstMSA=$(ls | sed -n '1p')
+#   secondMSA=$(ls | sed -n '2p')
+#   mkdir -p ../msa-rev
+#   cp $firstMSA ../msa-rev/b-$firstMSA
+#   cp $secondMSA ../msa-rev/a-$secondMSA
+# }
 
 # Cleanup results to make them easily parsable. Leave protein names
 # and their UniProt identifiers in coev_inter.tsv. For *.out files,
