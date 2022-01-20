@@ -43,38 +43,116 @@ local pair="${1}"
   done <<< $(echo "$SUMMARY")
 }
 
-# caps_second(){
-# local pair="${1}"
-#   cd $pair/msa
-#    firstMSA=$(ls | sed -n '1p')
-#   secondMSA=$(ls | sed -n '2p')
-#   mkdir -p ../msa-rev
-#   cp $firstMSA ../msa-rev/b-$firstMSA
-#   cp $secondMSA ../msa-rev/a-$secondMSA
-# }
+caps_reinspect() {
+local pair="${1}"
+  SUMMARY=$(sed -n '2p' $pair/coev_inter.csv)
+  while read -r Seq1 Seq2 numPairs totalComp CutOff thresholdR averageR averageSigR tree1length tree2length gapThreshold bootCutOff DistanceCoef ; do
+    if [ -z "${SUMMARY}" ]; then
+      echo -e "[\e[91mFAILED\e[39m] Copying pair where CAPS failed: $pair"
+      mv $pair $TMP/$RESULTS/fail
+    elif [ "$numPairs" -eq 0 ]; then
+      echo -e "[\e[34mNOCOEV\e[39m] No co-evolving pairs found for: $pair"
+      echo "$Seq1 $Seq2 $numPairs $totalComp $CutOff $thresholdR $averageR $averageSigR $tree1length $tree2length $gapThreshold $bootCutOff $DistanceCoef" >> $TMP/$RESULTS/coev_inter_nocoev.tsv
+      mkdir -p $TMP/$RESULTS/nocoev/$folder
+      mv $pair $TMP/$RESULTS/nocoev/$folder
+     elif [ "$numPairs" -gt 0 ]; then
+       echo -e "[\e[92mCOEVOL\e[39m]: $pair"
+       # https://stackoverflow.com/a/15149278
+       cd $pair
+       mv coev_inter.csv ${Seq1#*_}_${Seq2#*_}-coev_inter.csv  
+       mv ${Seq1}_${Seq2}.out ${Seq1#*_}_${Seq2#*_}.out
+    else
+      echo -e "Something went wrong for $pair ... Check!"
+    fi
+  done <<< $(echo "$SUMMARY")
+}
 
 # Cleanup results to make them easily parsable. Leave protein names
 # and their UniProt identifiers in coev_inter.tsv. For *.out files,
 # leave only the info of residues positions of the co-evolving pairs.
 results_cleanup() {
   local coevPair="${1}"
-  SUMMARY=$(sed -n '2p' $coevPair/coev_inter.csv)
-  while read -r Seq1 Seq2 numPairs totalComp CutOff thresholdR averageR averageSigR tree1length tree2length gapThreshold bootCutOff DistanceCoef ; do
-    cp $coevPair/${Seq1}_${Seq2}.out $coevPair/$coevPair.clean
-    echo "Clean up $coevPair.out"
-    sed -i -n '/Coevolving Pairs of amino acid sites/,/Overlapping groups of coevolving residues/p' $coevPair/$coevPair.clean
-    sed -i '1,5d' $coevPair/$coevPair.clean
-    sed -i 's/Overlapping groups of coevolving residues//' $coevPair/$coevPair.clean
-    sed -i '/^$/d' $coevPair/$coevPair.clean
-    sed -i "s:\t\t:\t:g" $coevPair/$coevPair.clean
-    sed -i "s/(/ /g" $coevPair/$coevPair.clean
-    sed -i "s/)/ /g" $coevPair/$coevPair.clean
-    sed -i "s/	/ /g" $coevPair/$coevPair.clean
-    sed -i "s/  / /g" $coevPair/$coevPair.clean
-    sed -i "s/^/$Seq1 $Seq2 /" $coevPair/$coevPair.clean
-    sed -i "s/\.fa/ /g" $coevPair/$coevPair.clean
-    sed -i "1i msa1 msa2 colA realA colB realB meanA meanB corr boot pvalA pvalB pMean corr1 corr2" $coevPair/$coevPair.clean
-  done <<< $(echo "$SUMMARY")
+  cd $coevPair
+  PROTEINONE=$(ls *.species | sed -n '1p')
+  PROTEINTWO=$(ls *.species | sed -n '2p')
+  
+  cp ${PROTEINONE%.*}.fa_${PROTEINTWO%.*}.fa.out ${PROTEINONE%.*}_${PROTEINTWO%.*}.clean
+  echo "Clean up ${PROTEINONE%.*}_${PROTEINTWO%.*}.out"
+  sed -i -n '/Coevolving Pairs of amino acid sites/,/Overlapping groups of coevolving residues/p' ${PROTEINONE%.*}_${PROTEINTWO%.*}.clean
+  sed -i '1,5d' ${PROTEINONE%.*}_${PROTEINTWO%.*}.clean
+  sed -i 's/Overlapping groups of coevolving residues//' ${PROTEINONE%.*}_${PROTEINTWO%.*}.clean
+  sed -i '/^$/d' ${PROTEINONE%.*}_${PROTEINTWO%.*}.clean
+  sed -i "s:\t\t:\t:g" ${PROTEINONE%.*}_${PROTEINTWO%.*}.clean
+  sed -i "s/(/ /g" ${PROTEINONE%.*}_${PROTEINTWO%.*}.clean
+  sed -i "s/)/ /g" ${PROTEINONE%.*}_${PROTEINTWO%.*}.clean
+  sed -i "s/	/ /g" ${PROTEINONE%.*}_${PROTEINTWO%.*}.clean
+  sed -i "s/  / /g" ${PROTEINONE%.*}_${PROTEINTWO%.*}.clean
+  sed -i "s/^/${PROTEINONE%.*} ${PROTEINTWO%.*} /" ${PROTEINONE%.*}_${PROTEINTWO%.*}.clean
+  sed -i "s/\.fa/ /g" ${PROTEINONE%.*}_${PROTEINTWO%.*}.clean
+  sed -i "1i msa1 msa2 colA realA colB realB meanA meanB corr boot pvalA pvalB pMean corr1 corr2" ${PROTEINONE%.*}_${PROTEINTWO%.*}.clean
+  
+  cp ${PROTEINTWO%.*}.fa_${PROTEINONE%.*}.fa.out ${PROTEINTWO%.*}_${PROTEINONE%.*}.clean
+  echo "Clean up ${PROTEINTWO%.*}_${PROTEINONE%.*}.out"
+  sed -i -n '/Coevolving Pairs of amino acid sites/,/Overlapping groups of coevolving residues/p' ${PROTEINTWO%.*}_${PROTEINONE%.*}.clean
+  sed -i '1,5d' ${PROTEINTWO%.*}_${PROTEINONE%.*}.clean
+  sed -i 's/Overlapping groups of coevolving residues//' ${PROTEINTWO%.*}_${PROTEINONE%.*}.clean
+  sed -i '/^$/d' ${PROTEINTWO%.*}_${PROTEINONE%.*}.clean
+  sed -i "s:\t\t:\t:g" ${PROTEINTWO%.*}_${PROTEINONE%.*}.clean
+  sed -i "s/(/ /g" ${PROTEINTWO%.*}_${PROTEINONE%.*}.clean
+  sed -i "s/)/ /g" ${PROTEINTWO%.*}_${PROTEINONE%.*}.clean
+  sed -i "s/	/ /g" ${PROTEINTWO%.*}_${PROTEINONE%.*}.clean
+  sed -i "s/  / /g" ${PROTEINTWO%.*}_${PROTEINONE%.*}.clean
+  sed -i "s/^/${PROTEINTWO%.*} ${PROTEINONE%.*} /" ${PROTEINTWO%.*}_${PROTEINONE%.*}.clean
+  sed -i "s/\.fa/ /g" ${PROTEINTWO%.*}_${PROTEINONE%.*}.clean
+  sed -i "1i msa1 msa2 colA realA colB realB meanA meanB corr boot pvalA pvalB pMean corr1 corr2" ${PROTEINTWO%.*}_${PROTEINONE%.*}.clean
+  
+  sed 1d ${PROTEINONE%.*}_${PROTEINTWO%.*}.clean | while read -r msa1 msa2 colA realA colB realB meanA meanB corr boot pvalA pvalB pMean corr1 corr2 ; do
+    if rowmatch=$(grep "$msa2 $msa1 $colB $realB $colA $realA" ${PROTEINTWO%.*}_${PROTEINONE%.*}.clean) ; then
+      echo "Found a match bothways: $rowmatch"
+    
+      # Do decimal values for fwd
+       fcorrdec=$(printf "%1.10f" $corr)
+      fcorr1dec=$(printf "%1.10f" $corr1)
+      fcorr2dec=$(printf "%1.10f" $corr2)
+      fpvalAdec=$(printf "%1.10f" $pvalA)
+      fpvalBdec=$(printf "%1.10f" $pvalB)
+      fpMeandec=$(printf "%1.10f" $pMean)
+    
+      # Define rev
+       rcorrdec=$(echo $rowmatch | awk '{print $9}')
+      rcorr1dec=$(echo $rowmatch | awk '{print $14}')
+      rcorr2dec=$(echo $rowmatch | awk '{print $15}')
+      rpvalAdec=$(echo $rowmatch | awk '{print $11}')
+      rpvalBdec=$(echo $rowmatch | awk '{print $12}')
+      rpMeandec=$(echo $rowmatch | awk '{print $13}')
+  
+      # Make sure we use reliable values
+      if (( $(echo "$fpMeandec <= $PVALUE" |bc -l) && $(echo "$rpMeandec <= $PVALUE" |bc -l) && \
+    	  $(echo "$fcorr1dec > 0" |bc -l) && $(echo "$rcorr1dec > 0" |bc -l) && \
+	  $(echo "$rcorr2dec > 0" |bc -l) && $(echo "$rcorr2dec > 0" |bc -l) )); then
+	  
+	  corrdec=$(printf "${fcorrdec}\n $rcorrdec" | datamash mean 1)
+         corr1dec=$(printf "${fcorr1dec}\n $rcorr1dec" | datamash mean 1)
+         corr2dec=$(printf "${fcorr2dec}\n $rcorr2dec" | datamash mean 1)
+         pvalAdec=$(printf "${fpvalAdec}\n $rpvalAdec" | datamash mean 1)
+         pvalBdec=$(printf "${fpvalBdec}\n $rpvalBdec" | datamash mean 1)
+         pMeandec=$(printf "${fpMeandec}\n $rpMeandec" | datamash mean 1)
+      
+        echo "Adding $pMeandec"
+        echo "$msa1 $msa2 $colA $realA $colB $realB $meanA $meanB $corrdec $boot $pvalAdec $pvalBdec $pMeandec $corr1dec $corr2dec" >> bothWays.clean
+      
+       elif (( $(echo "$fpMeandec <= $PVALUE" |bc -l) || $(echo "$rpMeandec <= $PVALUE" |bc -l) || \
+    	  $(echo "$fcorr1dec > 0" |bc -l) || $(echo "$rcorr1dec > 0" |bc -l) || \
+	  $(echo "$rcorr2dec > 0" |bc -l) || $(echo "$rcorr2dec > 0" |bc -l) )); then
+	  echo "Skipping $pMeandec"
+       else
+         echo "Something went wrong at $coevPair/${PROTEINONE%.*}_${PROTEINTWO%.*}.clean"
+       fi
+    else
+      echo "Did not find a match bothways: $rowmatch"
+    fi
+    done
+    cd ..  
 }
 
 # Save residue pairs with p-values below threshold and positive correlations
