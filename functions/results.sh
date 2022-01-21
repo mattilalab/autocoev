@@ -182,10 +182,6 @@ extract_columns_stats(){
       flt1=$( sed "${realA}q;d" $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD/${msa1}.fa.${ORGANISM}.ref | awk '{print $3}' )
       flt2=$( sed "${realB}q;d" $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD/${msa2}.fa.${ORGANISM}.ref | awk '{print $3}' )
 
-      ### Count the number of co-evolving sites from each protein
-      sitesCountA=$(awk '{print $4}' bothWays-corrected.tsv | datamash countunique 1)
-      sitesCountB=$(awk '{print $6}' bothWays-corrected.tsv | datamash countunique 1)
-
       # Convert Gblocks scores to numbers (. = 0 ; # = 1)
       if [ "$flt1" = "#" ]; then
         gblscore1="1"
@@ -202,6 +198,9 @@ extract_columns_stats(){
         echo "Check Gblocks scores!"
       fi
       
+      ### Calculate mean Gblocks score. Do we really need this?
+      #gblscore=$(printf "${gblscore1}\n $gblscore2" | datamash mean 1)
+      
       # Extract MSA columns for the co-evolving amino acids  
       echo -e "Extracting $colA-$colB"
       cat ./msa/$msa1.fa | seqkit subseq -r ${colA}:${colA} | seqkit sort -o columnStats/$msa1-$colA.txt
@@ -210,56 +209,32 @@ extract_columns_stats(){
       columnTotalA=$(sed '/^>/d' columnStats/$msa1-$colA.txt | wc -l)
        columnGapsA=$(sed '/^>/d' columnStats/$msa1-$colA.txt | grep "-"  | wc -l)
        roundPerGapA=$(printf "%1.5f" `echo "1 - ${columnGapsA}/${columnTotalA}" | bc -l`)
-      #roundPerGapA=$(printf "%1.5f" $percentageA)
 
       columnNoGapsA=$(sed '/^>/d' columnStats/$msa1-$colA.txt | grep -v "-" | wc -l)
       columnUniqueA=$(sed '/^>/d' columnStats/$msa1-$colA.txt | grep -v "-" | sort | uniq -c | sort -n -r | sed -n 1p | awk '{ print $1 }')
       roundDivResA=$(printf "%1.5f" `echo "1 - ${columnUniqueA}/${columnNoGapsA}" | bc -l`)
-      #roundDivResA=$(printf "%1.5f" $diversityResA)
 
       columnTotalB=$(sed '/^>/d' columnStats/$msa2-$colB.txt | wc -l)
        columnGapsB=$(sed '/^>/d' columnStats/$msa2-$colB.txt | grep "-" | wc -l)
        roundPerGapB=$(printf "%1.5f" `echo "1 - ${columnGapsB}/${columnTotalB}" | bc -l`)
-      #roundPerGapB=$(printf "%1.5f" $percentageB)
 
       columnNoGapsB=$(sed '/^>/d' columnStats/$msa2-$colB.txt | grep -v "-" | wc -l)
       columnUniqueB=$(sed '/^>/d' columnStats/$msa2-$colB.txt | grep -v "-" | sort | uniq -c | sort -n -r | sed -n 1p | awk '{ print $1 }')
       roundDivResB=$(printf "%1.5f" `echo "1 - ${columnUniqueB}/${columnNoGapsB}" | bc -l`)
-       #roundDivResB=$(printf "%1.5f" $diversityResB)
 
       # Calculate gaps and diversity    
       GapsAB=$(printf "${roundPerGapA}\n $roundPerGapB" | datamash mean 1 )
       DivsAB=$(printf "${roundDivResA}\n $roundDivResB" | datamash mean 1 )
-	 
-      # Calculate difference between raw p-values (absolute numbers)
-      #diffP=$(echo "${pvalA} - ${pvalB}" |bc -l | tr -d -)
-      #pDiff=$(printf "%1.10f" $diffP)
-
-      # Report total number of pairs
-      #totNumP=$(sed -n '2p' $coevPair/coev_inter.csv | awk '{print $3}')
       
-      ### Report total comparisons (MSA1*MSA2)
-      totComp=$(sed -n '2p' ${msa1}.fa_${msa2}.fa-coev_inter.csv | awk '{print $4}')
-	
       # Include correlation threshold as well. Just in case, make sure value is not in scientific format
       corrT1=$(printf "%1.10f" `sed -n '2p' ${msa1}.fa_${msa2}.fa-coev_inter.csv | awk '{print $6}'`)
       corrT2=$(printf "%1.10f" `sed -n '2p' ${msa2}.fa_${msa1}.fa-coev_inter.csv | awk '{print $6}'`)
-       corrT=$(printf "${corrT1}\n $corrT2" | datamash mean 1 )
-      #corrT=$(printf "%1.10f" $thrsR)
-      
-      ### Include average correlation
-      #averageR=$(sed -n '2p' $coevPair/coev_inter.csv | awk '{print $7}')
-      #averR=$(printf "%1.10f" $averageR)
-      
-      ### Include average significant correlation
-      #averageSigR=$(sed -n '2p' $coevPair/coev_inter.csv | awk '{print $8}')
-      #averSigR=$(printf "%1.10f" $averageSigR)
-	
+       corrT=$(printf "${corrT1}\n $corrT2" | datamash mean 1)
+      	
       # Calculate coevolutionary correlation, normalized to threshold. For normalization:
       # https://www.mathworks.com/matlabcentral/answers/322438-normalize-data-with-a-threshold
       # Thanks to Dian Dimitrov.
       normC=$(printf "%1.10f" `echo "($corr - $corrT)/(1 - $corrT)" |bc -l`)
-      #cCoev=$(printf "%1.10f" $normC)
       else
       # Make it echo sth else...
         echo "No amino acid pairs passed the Bonferroni correction for $msa1 $msa2!"
@@ -268,6 +243,95 @@ extract_columns_stats(){
   done
   sed -i "1i msa1 msa2 colA realA colB realB seq1 seq2 gblscore1 gblscore2 GapsAB DivsAB corrT corr normC boot p_value bonferroni holm bh hochberg hommel by fdr" bothWays-corrected-columns.tsv
 cd ..
+}
+
+# Export column statistics
+protein_pairs_stats() {
+  local coevPair="${1}"
+  cd $coevPair
+
+  # Define UniProt numbers of the two proteins
+  msa_1=$(sed -n 2p bothWays-corrected-columns.tsv | awk '{print $1}')
+  msa_2=$(sed -n 2p bothWays-corrected-columns.tsv | awk '{print $2}')
+  
+  ### Count the number of co-evolving sites from each protein. We have headers, so skip them...
+  sitesCountA=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $4}' | datamash countunique 1)
+  sitesCountB=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $6}' | datamash countunique 1) 
+ 
+  ### Report total comparisons (MSA1*MSA2). They are the same FWD and REV.
+  totCompar=$(sed -n '2p' ${msa_1}.fa_${msa_2}.fa-coev_inter.csv | awk '{print $4}')
+
+  ### Report correlation threshold
+  coevThr=$(sed -n p2 bothWays-corrected-columns.tsv | awk '{print $13}')
+
+  ### Include average correlation
+  avgRa=$(printf "%1.10f" `sed -n '2p' ${msa_1}.fa_${msa_2}.fa-coev_inter.csv | awk '{print $7}'`)
+  avgRb=$(printf "%1.10f" `sed -n '2p' ${msa_2}.fa_${msa_1}.fa-coev_inter.csv | awk '{print $7}'`)
+  averR=$(printf "${avgRa}\n $avgRb" | datamash mean 1)
+      
+  ### Include average significant correlation
+  avgSigRa=$(printf "%1.10f" `sed -n '2p' ${msa_1}.fa_${msa_2}.fa-coev_inter.csv | awk '{print $8}'`)
+  avgSigRa=$(printf "%1.10f" `sed -n '2p' ${msa_2}.fa_${msa_1}.fa-coev_inter.csv | awk '{print $8}'`)
+  averSigR=$(printf "${avgSigRa}\n $avgSigRb" | datamash mean 1)
+  
+  #coevNumber=$(awk '{print $3}' $coevPair/summary-${PVALUE}-${BONFERRONI}.tsv | datamash count 1)
+
+        cCoevMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $15}' | datamash min 1)
+        cCoevMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $15}' | datamash max 1)
+       cCoevMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $15}' | datamash mean 1)
+       cCoevSDEV=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $15}' | datamash sstdev 1)
+
+         bootMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $18}' | datamash min 1)
+         bootMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $18}' | datamash max 1)
+        bootMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $18}' | datamash mean 1)
+	bootSDEV=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $18}' | datamash sstdev 1)
+       
+        pMeanMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $19}' | datamash min 1)
+        pMeanMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $19}' | datamash max 1)
+       pMeanMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $19}' | datamash mean 1)
+       pMeanSDEV=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $19}' | datamash sstdev 1)
+       
+   BonferroniMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $20}' | datamash min 1)
+   BonferroniMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $20}' | datamash max 1)
+  BonferroniMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $20}' | datamash mean 1)
+  BonferroniSDEV=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $20}' | datamash sstdev 1)
+
+#       gblocksMIN=$(awk '{print $7}' $coevPair/summary-${PVALUE}-${BONFERRONI}.tsv | datamash min 1)
+#       gblocksMAX=$(awk '{print $7}' $coevPair/summary-${PVALUE}-${BONFERRONI}.tsv | datamash max 1)
+#      gblocksMEAN=$(awk '{print $7}' $coevPair/summary-${PVALUE}-${BONFERRONI}.tsv | datamash mean 1)
+#      gblocksSDEV=$(awk '{print $7}' $coevPair/summary-${PVALUE}-${BONFERRONI}.tsv | datamash sstdev 1)
+     
+#          coevMIN=$(awk '{print $8}' $coevPair/summary-${PVALUE}-${BONFERRONI}.tsv | datamash min 1)
+#          coevMAX=$(awk '{print $8}' $coevPair/summary-${PVALUE}-${BONFERRONI}.tsv | datamash max 1)
+#         coevMEAN=$(awk '{print $8}' $coevPair/summary-${PVALUE}-${BONFERRONI}.tsv | datamash mean 1)
+#         coevSDEV=$(awk '{print $8}' $coevPair/summary-${PVALUE}-${BONFERRONI}.tsv | datamash sstdev 1)
+
+
+      # Add score after Chi squared based on non-filtered results
+      if [ -s "$TMP/$RESULTS/chi/chi_test/${msa_1}.tsv" ] && [ -s "$TMP/$RESULTS/chi/chi_test/${msa_2}.tsv" ]; then
+        forward=$(grep "${msa_1} ${msa_2}" $TMP/$RESULTS/chi/chi_test/${msa_1}.tsv | awk '{print $7}')
+        reverse=$(grep "${msa_2} ${msa_1}" $TMP/$RESULTS/chi/chi_test/${msa_2}.tsv | awk '{print $7}')
+        chiboth=$(echo "$forward + $reverse" |bc -l)
+      else
+        echo "${msa_1} or ${msa_2} missing" >> $TMP/$RESULTS/miss.non-filtered
+      fi
+      
+      # Add score after Chi squared based on filtered results
+      if [ -s "$TMP/$RESULTS/chi/chi_test_final/${msa_1}.tsv" ] && [ -s "$TMP/$RESULTS/chi/chi_test_final/${msa_2}.tsv" ]; then
+	forward_fin=$(grep "${msa_1} ${msa_2}" $TMP/$RESULTS/chi/chi_test_final/${msa_1}.tsv | awk '{print $7}')
+	reverse_fin=$(grep "${msa_2} ${msa_1}" $TMP/$RESULTS/chi/chi_test_final/${msa_2}.tsv | awk '{print $7}')
+	chiboth_fin=$(echo "$forward_fin + $reverse_fin" |bc -l)
+      else
+        echo "${msa_1} or ${msa_2} missing" >> $TMP/$RESULTS/miss.filtered
+      fi
+      
+      # Collect data
+      echo "$msa_1 $msa_2 $coevThr $avgCor $avgSignCor $totCompar $coevNumAll $coevMIN $coevMAX $coevMEAN $coevSDEV $coevNumber $cCoevMIN $cCoevMAX $cCoevMEAN $cCoevSDEV $bootMIN $bootMAX $bootMEAN $bootSDEV $pMeanMIN $pMeanMAX $pMeanMEAN $pMeanSDEV $BonferroniMIN $BonferroniMAX $BonferroniMEAN $BonferroniSDEV $gblocksMIN $gblocksMAX $gblocksMEAN $gblocksSDEV $chiboth $chiboth_fin" >> $EOUT
+      echo "${msa_1} ${msa_2} added"
+      
+    else
+      echo "SKIPPING THE WHOLE PAIR: $coevPair"
+    fi
 }
 
 # # Save residue pairs with p-values below threshold and positive correlations

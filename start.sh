@@ -396,39 +396,53 @@ echo -e "\nDone with 11"
 ;;
 
 "[RES] Inspect CAPS results")
-# mkdir -p $TMP/$RESULTS/{fail,nocoev,coev,columns}
-# cd $TMP/$CAPSM/
-# for folder in * ; do
-#   echo -e "Processing $folder"
-#   cd $folder
-#   PAIRLIST=$( ls ./ )
-#   parallel $CORESCAPS caps_inspect ::: "$PAIRLIST"
-#   cd ..
-# done
-#
-# for folder in $TMP/$RESULTS/coev/* ; do
-#   cd $folder
-#   echo -e "Processing \e[92m${folder}\e[39m"
-#   echo "$DATESTAMP ${folder}" >> $TMP/progress-$ALPHA-$MSAMETHOD-$TREESCAPS.txt
-#   PAIRLIST=$(ls)
-#   msa=msa-rev
-#   parallel $CORESCAPS --progress capsfn ::: "$PAIRLIST"
-#   echo -e "Done in \e[92m${folder}\e[39m"
-#   echo "" >> $TMP/progress-$ALPHA-$MSAMETHOD-$TREESCAPS.txt
-#   cd ..
-# done
-#
-# for folder in $TMP/$RESULTS/coev/* ; do
-# echo -e "Processing $folder"
-#   cd $folder
-#   PAIRLIST=$( ls ./ )
-#   parallel $CORESCAPS caps_reinspect ::: "$PAIRLIST"
-#   cd ..
-# done
-# echo -e "\n\e[92mResults inspections done!\e[39m\n"
+mkdir -p $TMP/$RESULTS/{fail,nocoev,coev,columns}
+cd $TMP/$CAPSM/
+for folder in * ; do
+  echo -e "Processing $folder"
+  cd $folder
+  PAIRLIST=$( ls ./ )
+  parallel $CORESCAPS caps_inspect ::: "$PAIRLIST"
+  cd ..
+done
 
-# # mkdir -p $TMP/$RESULTS/chi/{back_calc,back_calc_final,chi_test,chi_test_final,proteins,proteinsFinal}
-# # coev_inter_collect
+for folder in $TMP/$RESULTS/coev/* ; do
+  cd $folder
+  echo -e "Processing \e[92m${folder}\e[39m"
+  echo "$DATESTAMP ${folder}" >> $TMP/progress-$ALPHA-$MSAMETHOD-$TREESCAPS.txt
+  PAIRLIST=$(ls)
+  msa=msa-rev
+  parallel $CORESCAPS --progress capsfn ::: "$PAIRLIST"
+  echo -e "Done in \e[92m${folder}\e[39m"
+  echo "" >> $TMP/progress-$ALPHA-$MSAMETHOD-$TREESCAPS.txt
+  cd ..
+done
+
+for folder in $TMP/$RESULTS/coev/* ; do
+echo -e "Processing $folder"
+  cd $folder
+  PAIRLIST=$( ls ./ )
+  parallel $CORESCAPS caps_reinspect ::: "$PAIRLIST"
+  cd ..
+done
+echo -e "\n\e[92mResults inspections done!\e[39m\n"
+
+cd $TMP/$RESULTS/coev/
+for resfold in * ; do
+  echo -e "Processing $resfold"
+  cd $resfold
+  SUBFOLD=$( ls ./ )
+  parallel $CORESCAPS results_cleanup ::: "$SUBFOLD"
+  parallel $CORESCAPS extract_columns_stats ::: "$SUBFOLD"
+  cd ..
+done
+
+echo -e "\nDone with 12"
+;;
+
+"[RES] Generate columns stats")
+mkdir -p $TMP/$RESULTS/chi/{back_calc,back_calc_final,chi_test,chi_test_final,proteins,proteinsFinal}
+coev_inter_collect
 # #
 # # # Chi tests
 # # cd $TMP/$RESULTS/chi/proteins
@@ -437,57 +451,42 @@ echo -e "\nDone with 11"
 # #
 # # #coev_inter_chi_results
 
-cd $TMP/$RESULTS/coev/
-for resfold in * ; do
-  echo -e "Processing $resfold"
-  cd $resfold
-  SUBFOLD=$( ls ./ )
- # parallel $CORESCAPS results_cleanup ::: "$SUBFOLD"
-  #parallel $CORESCAPS extract_columns_stats ::: "$SUBFOLD"
-  cd ..
-done
-
-echo -e "\nDone with 12"
-;;
-
-"[RES] Generate columns stats")
-
-cd $TMP/$RESULTS/coev/
-for resfold in * ; do
-  echo -e "Processing $resfold"
-  cd $resfold
-  SUBFOLD=$( ls ./ )
-  parallel $CORESCAPS adj_pVal ::: "$SUBFOLD"
-  parallel $CORESCAPS extract_columns ::: "$SUBFOLD"
-  parallel $CORESCAPS columns_stats ::: "$SUBFOLD"
-  #parallel $CORESCAPS post_run_protein_pairs_stats ::: "$SUBFOLD"
-  cd ..
-done
-
-cd $TMP/$RESULTS/chi/proteinsFinal
-protInt=$( ls ./ )
-parallel $CORESCAPS calc_back_final ::: "$protInt"
-cd ..
-#coev_inter_chi_results_final
-
-cd $TMP/$RESULTS/coev/
-for resfold in * ; do
-  echo -e "Processing $resfold"
-  cd $resfold
-  SUBFOLD=$( ls ./ )
-parallel $CORESCAPS exp_column_stats ::: "$SUBFOLD"
-  cd ..
-done
-
-summary_cleanup
-
-#post_run_protein_pairs
-
-#mkdir -p $TMP/$RESULTS/pairs-P${PVALUE}-B${BONFERRONI}
-#cd $TMP/$RESULTS/pairs-P${PVALUE}-B${BONFERRONI}
-#pairzInt=$( ls ./ )
-#parallel $CORESCAPS post_run_protein_pairs_stats ::: "$pairzInt"
-#add_headers_pairz
+# cd $TMP/$RESULTS/coev/
+# for resfold in * ; do
+#   echo -e "Processing $resfold"
+#   cd $resfold
+#   SUBFOLD=$( ls ./ )
+#   parallel $CORESCAPS adj_pVal ::: "$SUBFOLD"
+#   parallel $CORESCAPS extract_columns ::: "$SUBFOLD"
+#   parallel $CORESCAPS columns_stats ::: "$SUBFOLD"
+#   #parallel $CORESCAPS post_run_protein_pairs_stats ::: "$SUBFOLD"
+#   cd ..
+# done
+#
+# cd $TMP/$RESULTS/chi/proteinsFinal
+# protInt=$( ls ./ )
+# parallel $CORESCAPS calc_back_final ::: "$protInt"
+# cd ..
+# #coev_inter_chi_results_final
+#
+# cd $TMP/$RESULTS/coev/
+# for resfold in * ; do
+#   echo -e "Processing $resfold"
+#   cd $resfold
+#   SUBFOLD=$( ls ./ )
+# parallel $CORESCAPS exp_column_stats ::: "$SUBFOLD"
+#   cd ..
+# done
+#
+# summary_cleanup
+#
+# #post_run_protein_pairs
+#
+# #mkdir -p $TMP/$RESULTS/pairs-P${PVALUE}-B${BONFERRONI}
+# #cd $TMP/$RESULTS/pairs-P${PVALUE}-B${BONFERRONI}
+# #pairzInt=$( ls ./ )
+# #parallel $CORESCAPS post_run_protein_pairs_stats ::: "$pairzInt"
+# #add_headers_pairz
 
 echo -e "\nDone with 13"
 ;;

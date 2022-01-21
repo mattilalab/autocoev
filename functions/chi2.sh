@@ -2,12 +2,12 @@
 
 # These are needed when the chi^2 is done
 coev_inter_collect() {
-while read -r Seq1 Seq2 numPairs totalComp CutOff thresholdR averageR averageSigR tree1length tree2length gapThreshold bootCutOff DistanceCoef ; do
-  echo "${Seq1%.*} ${Seq2%.*} $numPairs $totalComp" >> $TMP/$RESULTS/chi/proteins/${Seq1%.*}.tsv
-  echo "${Seq1%.*}"
-  echo "${Seq2%.*} ${Seq1%.*} $numPairs $totalComp" >> $TMP/$RESULTS/chi/proteins/${Seq2%.*}.tsv
-  echo "${Seq2%.*}"
-done < $TMP/$RESULTS/coev_inter_nocoev.tsv
+# while read -r Seq1 Seq2 numPairs totalComp CutOff thresholdR averageR averageSigR tree1length tree2length gapThreshold bootCutOff DistanceCoef ; do
+#   echo "${Seq1%.*} ${Seq2%.*} $numPairs $totalComp" >> $TMP/$RESULTS/chi/proteins/${Seq1%.*}.tsv
+#   echo "${Seq1%.*}"
+#   echo "${Seq2%.*} ${Seq1%.*} $numPairs $totalComp" >> $TMP/$RESULTS/chi/proteins/${Seq2%.*}.tsv
+#   echo "${Seq2%.*}"
+# done < $TMP/$RESULTS/coev_inter_nocoev.tsv
 
 # These are needed when the chi^2 is done after our filtering
 while read -r Seq1 Seq2 numPairs totalComp CutOff thresholdR averageR averageSigR tree1length tree2length gapThreshold bootCutOff DistanceCoef ; do
