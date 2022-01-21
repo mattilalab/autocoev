@@ -43,6 +43,7 @@ local pair="${1}"
   done <<< $(echo "$SUMMARY")
 }
 
+# Inspect the results from the "reversed" analysis
 caps_reinspect() {
 local pair="${1}"
   SUMMARY=$(sed -n '2p' $pair/coev_inter.csv)
@@ -76,6 +77,7 @@ results_cleanup() {
   PROTEINONE=$(ls *.species | sed -n '1p')
   PROTEINTWO=$(ls *.species | sed -n '2p')
   
+  # "Forward" Protein A vs Protein B
   cp ${PROTEINONE%.*}.fa_${PROTEINTWO%.*}.fa.out ${PROTEINONE%.*}_${PROTEINTWO%.*}.clean
   echo "Clean up ${PROTEINONE%.*}_${PROTEINTWO%.*}.out"
   sed -i -n '/Coevolving Pairs of amino acid sites/,/Overlapping groups of coevolving residues/p' ${PROTEINONE%.*}_${PROTEINTWO%.*}.clean
@@ -91,6 +93,7 @@ results_cleanup() {
   sed -i "s/\.fa/ /g" ${PROTEINONE%.*}_${PROTEINTWO%.*}.clean
   sed -i "1i msa1 msa2 colA realA colB realB meanA meanB corr boot pvalA pvalB pMean corr1 corr2" ${PROTEINONE%.*}_${PROTEINTWO%.*}.clean
   
+  # "Reverse" Protein B vs Protein A
   cp ${PROTEINTWO%.*}.fa_${PROTEINONE%.*}.fa.out ${PROTEINTWO%.*}_${PROTEINONE%.*}.clean
   echo "Clean up ${PROTEINTWO%.*}_${PROTEINONE%.*}.out"
   sed -i -n '/Coevolving Pairs of amino acid sites/,/Overlapping groups of coevolving residues/p' ${PROTEINTWO%.*}_${PROTEINONE%.*}.clean
@@ -110,7 +113,7 @@ results_cleanup() {
     if rowmatch=$(grep "$msa2 $msa1 $colB $realB $colA $realA" ${PROTEINTWO%.*}_${PROTEINONE%.*}.clean) ; then
       echo "Found a match bothways: $rowmatch"
     
-      # Do decimal values for fwd
+      # Do decimal values for fwd. This is from the while read loop
        fcorrdec=$(printf "%1.10f" $corr)
       fcorr1dec=$(printf "%1.10f" $corr1)
       fcorr2dec=$(printf "%1.10f" $corr2)
@@ -118,7 +121,7 @@ results_cleanup() {
       #fpvalBdec=$(printf "%1.10f" $pvalB)
       fpMeandec=$(printf "%1.10f" $pMean)
     
-      # Define rev
+      # Define rev. This comes from the grep step
        rcorrdec=$(printf "%1.10f" `echo $rowmatch | awk '{print $9}'`)
       rcorr1dec=$(printf "%1.10f" `echo $rowmatch | awk '{print $14}'`)
       rcorr2dec=$(printf "%1.10f" `echo $rowmatch | awk '{print $15}'`)
@@ -126,7 +129,7 @@ results_cleanup() {
       #rpvalBdec=$(printf "%1.10f" `echo $rowmatch | awk '{print $12}'`)
       rpMeandec=$(printf "%1.10f" `echo $rowmatch | awk '{print $13}'`)
   
-      # Make sure we use reliable values
+      # Make sure we use reliable values. And we do not need all this in the output (comment out for now)
       if (( $(echo "$fpMeandec <= $PVALUE" |bc -l) && $(echo "$rpMeandec <= $PVALUE" |bc -l) && \
     	  $(echo "$fcorr1dec > 0" |bc -l) && $(echo "$rcorr1dec > 0" |bc -l) && \
 	  $(echo "$rcorr2dec > 0" |bc -l) && $(echo "$rcorr2dec > 0" |bc -l) )); then
