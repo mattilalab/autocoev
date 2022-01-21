@@ -159,6 +159,10 @@ results_cleanup() {
     
     #sed -i "1i msa1 msa2 colA realA colB realB meanA meanB corr boot pvalA pvalB pMean corr1 corr2" bothWays.tsv
     sed -i "1i msa1 msa2 colA realA colB realB corr boot p_value" bothWays.tsv
+    
+    # Run Luqman's script for Bonferroni & co correction of p-values
+    echo -e "Running R for Bonferroni correction for $coevPair"
+    Rscript $CWD/R/AdjPval.R bothWays.tsv bothWays-corrected.tsv
     cd ..  
 }
 
