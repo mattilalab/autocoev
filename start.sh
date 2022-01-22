@@ -445,12 +445,12 @@ echo -e "\nDone with 12"
 #coev_inter_collect
 # #
 
-### Chi tests ##########################################################
-# mkdir -p $TMP/$RESULTS/chi/{back_calc_final,chi_test_final}
-# cd $TMP/$RESULTS/chi/proteins
-# protInt=$( ls ./ )
-# parallel $CORESCAPS calc_back_final ::: "$protInt"
-########################################################################
+## Chi tests ##########################################################
+mkdir -p $TMP/$RESULTS/chi/{back_calc_final,chi_test_final}
+cd $TMP/$RESULTS/chi/proteins
+protInt=$( ls ./ )
+parallel $CORESCAPS calc_back_final ::: "$protInt"
+#######################################################################
 
 cd $TMP/$RESULTS/coev/
 for resfold in * ; do
@@ -460,6 +460,8 @@ for resfold in * ; do
   parallel $CORESCAPS protein_pairs_stats ::: "$SUBFOLD"
   cd ..
 done
+
+summary_cleanup
 
 #coev_inter_chi_results
 
