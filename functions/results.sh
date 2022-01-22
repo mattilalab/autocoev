@@ -272,8 +272,8 @@ protein_pairs_stats() {
   cd $coevPair
 
   # Define UniProt numbers of the two proteins
-  msa_1=$(sed -n 2p bothWays-corrected-columns.tsv | awk '{print $1}')
-  msa_2=$(sed -n 2p bothWays-corrected-columns.tsv | awk '{print $2}')
+  msa_1=$(sed -n '2p' bothWays-corrected-columns.tsv | awk '{print $1}')
+  msa_2=$(sed -n '2p' bothWays-corrected-columns.tsv | awk '{print $2}')
   
   ### Count the number of co-evolving sites from each protein. We have headers, so skip them...
   sitesCountA=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $4}' | datamash countunique 1)
@@ -283,7 +283,7 @@ protein_pairs_stats() {
   totCompar=$(sed -n '2p' ${msa_1}.fa_${msa_2}.fa-coev_inter.csv | awk '{print $4}')
 
   ### Report correlation threshold
-  coevThr=$(sed -n p2 bothWays-corrected-columns.tsv | awk '{print $13}')
+  coevThr=$(sed -n '2p' bothWays-corrected-columns.tsv | awk '{print $13}')
 
   ### Include average correlation
   avgRa=$(printf "%1.10f" `sed -n '2p' ${msa_1}.fa_${msa_2}.fa-coev_inter.csv | awk '{print $7}'`)
@@ -292,7 +292,7 @@ protein_pairs_stats() {
       
   ### Include average significant correlation
   avgSigRa=$(printf "%1.10f" `sed -n '2p' ${msa_1}.fa_${msa_2}.fa-coev_inter.csv | awk '{print $8}'`)
-  avgSigRa=$(printf "%1.10f" `sed -n '2p' ${msa_2}.fa_${msa_1}.fa-coev_inter.csv | awk '{print $8}'`)
+  avgSigRb=$(printf "%1.10f" `sed -n '2p' ${msa_2}.fa_${msa_1}.fa-coev_inter.csv | awk '{print $8}'`)
   averSigR=$(printf "${avgSigRa}\n $avgSigRb" | datamash mean 1)
   
   #coevNumber=$(awk '{print $3}' $coevPair/summary-${PVALUE}-${BONFERRONI}.tsv | datamash count 1)
@@ -300,22 +300,22 @@ protein_pairs_stats() {
         cCoevMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $15}' | datamash min 1)
         cCoevMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $15}' | datamash max 1)
        cCoevMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $15}' | datamash mean 1)
-       cCoevSDEV=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $15}' | datamash sstdev 1)
+       #cCoevSDEV=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $15}' | datamash sstdev 1)
 
          bootMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $18}' | datamash min 1)
          bootMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $18}' | datamash max 1)
         bootMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $18}' | datamash mean 1)
-	bootSDEV=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $18}' | datamash sstdev 1)
+	#bootSDEV=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $18}' | datamash sstdev 1)
        
         pMeanMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $19}' | datamash min 1)
         pMeanMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $19}' | datamash max 1)
        pMeanMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $19}' | datamash mean 1)
-       pMeanSDEV=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $19}' | datamash sstdev 1)
+       #pMeanSDEV=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $19}' | datamash sstdev 1)
        
    BonferroniMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $20}' | datamash min 1)
    BonferroniMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $20}' | datamash max 1)
   BonferroniMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $20}' | datamash mean 1)
-  BonferroniSDEV=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $20}' | datamash sstdev 1)
+  #BonferroniSDEV=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $20}' | datamash sstdev 1)
 
 #       gblocksMIN=$(awk '{print $7}' $coevPair/summary-${PVALUE}-${BONFERRONI}.tsv | datamash min 1)
 #       gblocksMAX=$(awk '{print $7}' $coevPair/summary-${PVALUE}-${BONFERRONI}.tsv | datamash max 1)
@@ -328,31 +328,26 @@ protein_pairs_stats() {
 #         coevSDEV=$(awk '{print $8}' $coevPair/summary-${PVALUE}-${BONFERRONI}.tsv | datamash sstdev 1)
 
 
-      # Add score after Chi squared based on non-filtered results
-      if [ -s "$TMP/$RESULTS/chi/chi_test/${msa_1}.tsv" ] && [ -s "$TMP/$RESULTS/chi/chi_test/${msa_2}.tsv" ]; then
-        forward=$(grep "${msa_1} ${msa_2}" $TMP/$RESULTS/chi/chi_test/${msa_1}.tsv | awk '{print $7}')
-        reverse=$(grep "${msa_2} ${msa_1}" $TMP/$RESULTS/chi/chi_test/${msa_2}.tsv | awk '{print $7}')
-        chiboth=$(echo "$forward + $reverse" |bc -l)
-      else
-        echo "${msa_1} or ${msa_2} missing" >> $TMP/$RESULTS/miss.non-filtered
-      fi
+#       # Add score after Chi squared based on non-filtered results
+#       if [ -s "$TMP/$RESULTS/chi/chi_test/${msa_1}.tsv" ] && [ -s "$TMP/$RESULTS/chi/chi_test/${msa_2}.tsv" ]; then
+#         forward=$(grep "${msa_1} ${msa_2}" $TMP/$RESULTS/chi/chi_test/${msa_1}.tsv | awk '{print $7}')
+#         reverse=$(grep "${msa_2} ${msa_1}" $TMP/$RESULTS/chi/chi_test/${msa_2}.tsv | awk '{print $7}')
+#         chiboth=$(echo "$forward + $reverse" |bc -l)
+#       else
+#         echo "${msa_1} or ${msa_2} missing" >> $TMP/$RESULTS/miss.non-filtered
+#       fi
       
-      # Add score after Chi squared based on filtered results
-      if [ -s "$TMP/$RESULTS/chi/chi_test_final/${msa_1}.tsv" ] && [ -s "$TMP/$RESULTS/chi/chi_test_final/${msa_2}.tsv" ]; then
-	forward_fin=$(grep "${msa_1} ${msa_2}" $TMP/$RESULTS/chi/chi_test_final/${msa_1}.tsv | awk '{print $7}')
-	reverse_fin=$(grep "${msa_2} ${msa_1}" $TMP/$RESULTS/chi/chi_test_final/${msa_2}.tsv | awk '{print $7}')
+        # Add score after Chi squared based on filtered results
+	forward_fin=$(grep "${msa_1} ${msa_2}" $TMP/$RESULTS/chi/chi_test_final/${msa_1}.fa.tsv | awk '{print $7}')
+	reverse_fin=$(grep "${msa_2} ${msa_1}" $TMP/$RESULTS/chi/chi_test_final/${msa_2}.fa.tsv | awk '{print $7}')
 	chiboth_fin=$(echo "$forward_fin + $reverse_fin" |bc -l)
-      else
-        echo "${msa_1} or ${msa_2} missing" >> $TMP/$RESULTS/miss.filtered
-      fi
       
       # Collect data
-      echo "$msa_1 $msa_2 $coevThr $avgCor $avgSignCor $totCompar $coevNumAll $coevMIN $coevMAX $coevMEAN $coevSDEV $coevNumber $cCoevMIN $cCoevMAX $cCoevMEAN $cCoevSDEV $bootMIN $bootMAX $bootMEAN $bootSDEV $pMeanMIN $pMeanMAX $pMeanMEAN $pMeanSDEV $BonferroniMIN $BonferroniMAX $BonferroniMEAN $BonferroniSDEV $gblocksMIN $gblocksMAX $gblocksMEAN $gblocksSDEV $chiboth $chiboth_fin" >> $EOUT
+      #echo "$msa_1 $msa_2 $coevThr $avgCor $avgSignCor $totCompar $coevNumAll $coevMIN $coevMAX $coevMEAN $coevSDEV $coevNumber $cCoevMIN $cCoevMAX $cCoevMEAN $cCoevSDEV $bootMIN $bootMAX $bootMEAN $bootSDEV $pMeanMIN $pMeanMAX $pMeanMEAN $pMeanSDEV $BonferroniMIN $BonferroniMAX $BonferroniMEAN $BonferroniSDEV $gblocksMIN $gblocksMAX $gblocksMEAN $gblocksSDEV $chiboth $chiboth_fin" >> $EOUT
+      echo "$msa_1 $msa_2 $coevThr $averR $averSigR $totCompar $sitesCountA $sitesCountB $cCoevMIN $cCoevMAX $cCoevMEAN $cCoevSDEV $bootMIN $bootMAX $bootMEAN $pMeanMIN $pMeanMAX $pMeanMEAN $BonferroniMIN $BonferroniMAX $BonferroniMEAN $BonferroniSDEV $chiboth_fin" >> $EOUT
       echo "${msa_1} ${msa_2} added"
       
-    else
-      echo "SKIPPING THE WHOLE PAIR: $coevPair"
-    fi
+cd ..
 }
 
 # # Save residue pairs with p-values below threshold and positive correlations

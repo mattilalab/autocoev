@@ -444,11 +444,22 @@ echo -e "\nDone with 12"
 #mkdir -p $TMP/$RESULTS/chi/{back_calc,back_calc_final,chi_test,chi_test_final,proteins,proteinsFinal}
 #coev_inter_collect
 # #
-# Chi tests
-mkdir -p $TMP/$RESULTS/chi/{back_calc_final,chi_test_final}
-cd $TMP/$RESULTS/chi/proteins
-protInt=$( ls ./ )
-parallel $CORESCAPS calc_back_final ::: "$protInt"
+
+### Chi tests ##########################################################
+# mkdir -p $TMP/$RESULTS/chi/{back_calc_final,chi_test_final}
+# cd $TMP/$RESULTS/chi/proteins
+# protInt=$( ls ./ )
+# parallel $CORESCAPS calc_back_final ::: "$protInt"
+########################################################################
+
+cd $TMP/$RESULTS/coev/
+for resfold in * ; do
+  echo -e "Processing $resfold"
+  cd $resfold
+  SUBFOLD=$( ls ./ )
+  parallel $CORESCAPS protein_pairs_stats ::: "$SUBFOLD"
+  cd ..
+done
 
 #coev_inter_chi_results
 
