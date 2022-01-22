@@ -19,15 +19,19 @@ local pair="${1}"
       cp -a $pair $TMP/$RESULTS/fail
     elif [ "$numPairs" -eq 0 ]; then
       echo -e "[\e[34mNOCOEV\e[39m] No co-evolving pairs found for: $pair"
-      echo "$Seq1 $Seq2 $numPairs $totalComp $CutOff $thresholdR $averageR $averageSigR $tree1length $tree2length $gapThreshold $bootCutOff $DistanceCoef" >> $TMP/$RESULTS/coev_inter_nocoev.tsv
+      
+      # Export these, since they are needed for the Chi^2 test later
+      mkdir -p $TMP/$RESULTS/chi/proteins/
+      echo "${Seq1} ${Seq2} $numPairs $totalComp" >> $TMP/$RESULTS/chi/proteins/${Seq1}.tsv
+      echo "${Seq2} ${Seq1} $numPairs $totalComp" >> $TMP/$RESULTS/chi/proteins/${Seq2}.tsv
+      
       mkdir -p $TMP/$RESULTS/nocoev/$folder
       cp -a $pair $TMP/$RESULTS/nocoev/$folder
     elif [ "$numPairs" -gt 0 ]; then
       echo -e "[\e[92mCOEVOL\e[39m] Copying pair with co-evolution: $pair"
-      echo "$Seq1 $Seq2 $numPairs $totalComp $CutOff $thresholdR $averageR $averageSigR $tree1length $tree2length $gapThreshold $bootCutOff $DistanceCoef" >> $TMP/$RESULTS/coev_inter_coev.tsv
       mkdir -p $TMP/$RESULTS/coev/$folder
       cp -a $pair $TMP/$RESULTS/coev/$folder
-      
+     
       # Prepare the "reversed" MSA, so we run CAPS the other way round
       mv $TMP/$RESULTS/coev/$folder/$pair/coev_inter.csv $TMP/$RESULTS/coev/$folder/$pair/${Seq1}_${Seq2}-coev_inter.csv
       cd $TMP/$RESULTS/coev/$folder/$pair/msa
@@ -56,6 +60,11 @@ local pair="${1}"
       echo "$Seq1 $Seq2 $numPairs $totalComp $CutOff $thresholdR $averageR $averageSigR $tree1length $tree2length $gapThreshold $bootCutOff $DistanceCoef" >> $TMP/$RESULTS/coev_inter_nocoev.tsv
       mkdir -p $TMP/$RESULTS/nocoev/$folder
       mv $pair $TMP/$RESULTS/nocoev/$folder
+      
+      # These are needed for the Chi^2 test
+      echo "${Seq1#*_} ${Seq2#*_} $numPairs $totalComp" >> $TMP/$RESULTS/chi/proteins/${Seq1#*_}.tsv
+      echo "${Seq2#*_} ${Seq1#*_} $numPairs $totalComp" >> $TMP/$RESULTS/chi/proteins/${Seq2#*_}.tsv
+      
      elif [ "$numPairs" -gt 0 ]; then
        echo -e "[\e[92mCOEVOL\e[39m]: $pair"
        # https://stackoverflow.com/a/15149278
@@ -133,16 +142,21 @@ results_cleanup() {
       if (( $(echo "$fpMeandec <= $PVALUE" |bc -l) && $(echo "$rpMeandec <= $PVALUE" |bc -l) && \
     	  $(echo "$fcorr1dec > 0" |bc -l) && $(echo "$rcorr1dec > 0" |bc -l) && \
 	  $(echo "$rcorr2dec > 0" |bc -l) && $(echo "$rcorr2dec > 0" |bc -l) )); then
-	  
+
+          # Save the two correlation s (FWD and REV) mean value. The correlation is, in turn,
+	  # estimated in two directions for each FWD and REV (e.g. $fcorr1dec & $fcorr2dec),
+	  # but we do not want to output a crazy amount of stuff, do we? Same goes for the
+	  # p-values (e.g. fpvalAdec & fpvalBdec).	  
 	  corrdec=$(printf "${fcorrdec}\n $rcorrdec" | datamash mean 1)
-         #corr1dec=$(printf "${fcorr1dec}\n $rcorr1dec" | datamash mean 1)
-         #corr2dec=$(printf "${fcorr2dec}\n $rcorr2dec" | datamash mean 1)
-         #pvalAdec=$(printf "${fpvalAdec}\n $rpvalAdec" | datamash mean 1)
-         #pvalBdec=$(printf "${fpvalBdec}\n $rpvalBdec" | datamash mean 1)
-         pMeandec=$(printf "${fpMeandec}\n $rpMeandec" | datamash mean 1)
+          #corr1dec=$(printf "${fcorr1dec}\n $rcorr1dec" | datamash mean 1)
+          #corr2dec=$(printf "${fcorr2dec}\n $rcorr2dec" | datamash mean 1)
+          #pvalAdec=$(printf "${fpvalAdec}\n $rpvalAdec" | datamash mean 1)
+          #pvalBdec=$(printf "${fpvalBdec}\n $rpvalBdec" | datamash mean 1)
+          pMeandec=$(printf "${fpMeandec}\n $rpMeandec" | datamash mean 1)
       
         echo "Adding $pMeandec"
-        #echo "$msa1 $msa2 $colA $realA $colB $realB $meanA $meanB $corrdec $boot $pvalAdec $pvalBdec $pMeandec $corr1dec $corr2dec" >> bothWays.tsv
+        
+	#echo "$msa1 $msa2 $colA $realA $colB $realB $meanA $meanB $corrdec $boot $pvalAdec $pvalBdec $pMeandec $corr1dec $corr2dec" >> bothWays.tsv
         echo "$msa1 $msa2 $colA $realA $colB $realB $corrdec $boot $pMeandec" >> bothWays.tsv
 	
        elif (( $(echo "$fpMeandec <= $PVALUE" |bc -l) || $(echo "$rpMeandec <= $PVALUE" |bc -l) || \
@@ -159,7 +173,14 @@ results_cleanup() {
     
   #sed -i "1i msa1 msa2 colA realA colB realB meanA meanB corr boot pvalA pvalB pMean corr1 corr2" bothWays.tsv
   sed -i "1i msa1 msa2 colA realA colB realB corr boot p_value" bothWays.tsv
-    
+  
+  # How many pairs do we have left? This is needed for Chi^2 and this is
+  # how CAPS2 counts pairs. Also get the totalcomp and export it.
+  pairsNumber=$(sed 1d bothWays.tsv | awk '{print $3}' | datamash count 1)
+  totCompares=$(sed -n 2p ${PROTEINONE%.*}.fa_${PROTEINTWO%.*}.fa-coev_inter.csv | awk '{print $4}')
+  echo "${PROTEINONE%.*}.fa ${PROTEINTWO%.*}.fa $pairsNumber $totCompares" >> $TMP/$RESULTS/chi/proteins/${PROTEINONE%.*}.fa.tsv
+  echo "${PROTEINTWO%.*}.fa ${PROTEINONE%.*}.fa $pairsNumber $totCompares" >> $TMP/$RESULTS/chi/proteins/${PROTEINTWO%.*}.fa.tsv
+  
   # Run Luqman's script for Bonferroni & co correction of p-values
   echo -e "Running R for Bonferroni correction for $coevPair"
   Rscript $CWD/R/AdjPval.R bothWays.tsv bothWays-corrected.tsv

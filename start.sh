@@ -441,15 +441,16 @@ echo -e "\nDone with 12"
 ;;
 
 "[RES] Generate columns stats")
-mkdir -p $TMP/$RESULTS/chi/{back_calc,back_calc_final,chi_test,chi_test_final,proteins,proteinsFinal}
-coev_inter_collect
+#mkdir -p $TMP/$RESULTS/chi/{back_calc,back_calc_final,chi_test,chi_test_final,proteins,proteinsFinal}
+#coev_inter_collect
 # #
-# # # Chi tests
-# # cd $TMP/$RESULTS/chi/proteins
-# # protInt=$( ls ./ )
-# # parallel $CORESCAPS calc_back ::: "$protInt"
-# #
-# # #coev_inter_chi_results
+# Chi tests
+mkdir -p $TMP/$RESULTS/chi/{back_calc_final,chi_test_final}
+cd $TMP/$RESULTS/chi/proteins
+protInt=$( ls ./ )
+parallel $CORESCAPS calc_back_final ::: "$protInt"
+
+#coev_inter_chi_results
 
 # cd $TMP/$RESULTS/coev/
 # for resfold in * ; do
