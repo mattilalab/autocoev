@@ -131,7 +131,7 @@ results_cleanup() {
   sed -i "1i msa1 msa2 colA realA colB realB meanA meanB corr boot pvalA pvalB pMean corr1 corr2" ${PROTEINTWO%.*}_${PROTEINONE%.*}.clean
   
   sed 1d ${PROTEINONE%.*}_${PROTEINTWO%.*}.clean | while read -r msa1 msa2 colA realA colB realB meanA meanB corr boot pvalA pvalB pMean corr1 corr2 ; do
-    if rowmatch=$(grep "$msa2 $msa1 $colB $realB $colA $realA" ${PROTEINTWO%.*}_${PROTEINONE%.*}.clean) ; then
+    if rowmatch=$(LANG=C grep -F -w "$msa2 $msa1 $colB $realB $colA $realA" ${PROTEINTWO%.*}_${PROTEINONE%.*}.clean) ; then
       echo "Found a match bothways: $rowmatch"
     
       # Do decimal values for fwd. This is from the while read loop
@@ -152,28 +152,28 @@ results_cleanup() {
   
       # Make sure we use reliable values. And we do not need all this in the output (comment out for now)
       if (( $(echo "$fpMeandec <= $PVALUE" |bc -l) && $(echo "$rpMeandec <= $PVALUE" |bc -l) && \
-    	  $(echo "$fcorr1dec > 0" |bc -l) && $(echo "$rcorr1dec > 0" |bc -l) && \
-	  $(echo "$rcorr2dec > 0" |bc -l) && $(echo "$rcorr2dec > 0" |bc -l) )); then
+    	    $(echo "$fcorr1dec > 0" |bc -l) && $(echo "$rcorr1dec > 0" |bc -l) && \
+	    $(echo "$fcorr2dec > 0" |bc -l) && $(echo "$rcorr2dec > 0" |bc -l) )); then
 
           # Save the two correlation s (FWD and REV) mean value. The correlation is, in turn,
 	  # estimated in two directions for each FWD and REV (e.g. $fcorr1dec & $fcorr2dec),
 	  # but we do not want to output a crazy amount of stuff, do we? Same goes for the
 	  # p-values (e.g. fpvalAdec & fpvalBdec).	  
-	  corrdec=$(printf "${fcorrdec}\n $rcorrdec" | datamash mean 1)
+	  corrdec=$(printf "${fcorrdec}\n ${rcorrdec}" | datamash mean 1)
           #corr1dec=$(printf "${fcorr1dec}\n $rcorr1dec" | datamash mean 1)
           #corr2dec=$(printf "${fcorr2dec}\n $rcorr2dec" | datamash mean 1)
           #pvalAdec=$(printf "${fpvalAdec}\n $rpvalAdec" | datamash mean 1)
           #pvalBdec=$(printf "${fpvalBdec}\n $rpvalBdec" | datamash mean 1)
-          pMeandec=$(printf "${fpMeandec}\n $rpMeandec" | datamash mean 1)
+          pMeandec=$(printf "${fpMeandec}\n ${rpMeandec}" | datamash mean 1)
       
         echo "Adding $pMeandec"
         
 	#echo "$msa1 $msa2 $colA $realA $colB $realB $meanA $meanB $corrdec $boot $pvalAdec $pvalBdec $pMeandec $corr1dec $corr2dec" >> bothWays.tsv
         echo "$msa1 $msa2 $colA $realA $colB $realB $corrdec $boot $pMeandec" >> bothWays.tsv
 	
-       elif (( $(echo "$fpMeandec <= $PVALUE" |bc -l) || $(echo "$rpMeandec <= $PVALUE" |bc -l) || \
-    	  $(echo "$fcorr1dec > 0" |bc -l) || $(echo "$rcorr1dec > 0" |bc -l) || \
-	  $(echo "$rcorr2dec > 0" |bc -l) || $(echo "$rcorr2dec > 0" |bc -l) )); then
+       elif (( $(echo "$fpMeandec >= $PVALUE" |bc -l) || $(echo "$rpMeandec >= $PVALUE" |bc -l) || \
+    	  $(echo "$fcorr1dec <= 0" |bc -l) || $(echo "$rcorr1dec <= 0" |bc -l) || \
+	  $(echo "$rcorr2dec <= 0" |bc -l) || $(echo "$rcorr2dec <= 0" |bc -l) )); then
 	  echo "Skipping $pMeandec"
        else
          echo "Something went wrong at $coevPair/${PROTEINONE%.*}_${PROTEINTWO%.*}.clean"
