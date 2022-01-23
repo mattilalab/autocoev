@@ -24,6 +24,22 @@ caps_set() {
   fi 
 }
 
+# Determine what trees to use
+caps_set_rev() {
+  if [ "$TREESCAPS" = "phyml" ]; then
+    TREMSA="-T ./tre-rev"
+    echo -e "\nCAPS will run with PhyML trees!"
+  elif [ "$TREESCAPS" = "external" ]; then
+    TREMSA="-T ./tre-rev"
+    echo -e "\nCAPS will run with external trees!"
+  elif [ "$TREESCAPS" = "auto" ]; then
+    TREMSA=""
+    echo -e "\nCAPS will estimate its own trees!"
+  else
+  echo -e "\nSometing is wrong with your trees!"
+  fi 
+}
+
 # Set a CAPS function with user-defined variables to be executed via GNU
 # Parallel for each individual folder of MSA pairs.
 capsfn() {

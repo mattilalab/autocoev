@@ -406,6 +406,7 @@ for folder in * ; do
   cd ..
 done
 
+caps_set_rev
 for folder in $TMP/$RESULTS/coev/* ; do
   cd $folder
   echo -e "Processing \e[92m${folder}\e[39m"
@@ -417,6 +418,7 @@ for folder in $TMP/$RESULTS/coev/* ; do
   echo "" >> $TMP/progress-$ALPHA-$MSAMETHOD-$TREESCAPS.txt
   cd ..
 done
+
 
 for folder in $TMP/$RESULTS/coev/* ; do
 echo -e "Processing $folder"
@@ -433,6 +435,13 @@ for resfold in * ; do
   cd $resfold
   SUBFOLD=$( ls ./ )
   parallel $CORESCAPS results_cleanup ::: "$SUBFOLD"
+  cd ..
+done
+
+for resfold in * ; do
+  echo -e "Processing $resfold"
+  cd $resfold
+  SUBFOLD=$( ls ./ )
   parallel $CORESCAPS extract_columns_stats ::: "$SUBFOLD"
   cd ..
 done

@@ -37,10 +37,22 @@ local pair="${1}"
       cd $TMP/$RESULTS/coev/$folder/$pair/msa
       firstMSA=$(ls | sed -n '1p')
      secondMSA=$(ls | sed -n '2p')
-     mkdir -p ../msa-rev
-     cp $firstMSA ../msa-rev/b_${firstMSA}
-     cp $secondMSA ../msa-rev/a_${secondMSA}
+      mkdir -p ../msa-rev
+      cp $firstMSA ../msa-rev/b_${firstMSA}
+      cp $secondMSA ../msa-rev/a_${secondMSA}
     
+      # If we have PhyML generated trees, do the same for them
+      if [ "$TREESCAPS" = "phyml" ]; then
+        mkdir -p ../tre-rev
+	cd ../tre
+	cp ${firstMSA%.*}.tre ../tre-rev/b_${firstMSA%.*}.tre
+	cp ${secondMSA%.*}.tre ../tre-rev/a_${secondMSA%.*}.tre
+      elif [ "$TREESCAPS" = "auto" ]; then
+        echo "CAPS generated trees automatically"
+      else
+        echo "Something went wronng at trees REV step!"
+      fi
+
     else
       echo -e "Something went wrong for $pair ... Check!"
     fi
@@ -167,24 +179,30 @@ results_cleanup() {
          echo "Something went wrong at $coevPair/${PROTEINONE%.*}_${PROTEINTWO%.*}.clean"
        fi
     else
-      echo "Did not find a match bothways: $rowmatch"
+      echo "Did not find a match bothways"
     fi
     done
-    
-  #sed -i "1i msa1 msa2 colA realA colB realB meanA meanB corr boot pvalA pvalB pMean corr1 corr2" bothWays.tsv
-  sed -i "1i msa1 msa2 colA realA colB realB corr boot p_value" bothWays.tsv
+
+  # Check if we have do-evolving pairs detected bidirectionally
+  if [ -f bothWays.tsv ]; then
+    echo "Found amino acid pairs both ways for $coevPair"
+    sed -i "1i msa1 msa2 colA realA colB realB corr boot p_value" bothWays.tsv
   
-  # How many pairs do we have left? This is needed for Chi^2 and this is
-  # how CAPS2 counts pairs. Also get the totalcomp and export it.
-  pairsNumber=$(sed 1d bothWays.tsv | awk '{print $3}' | datamash count 1)
-  totCompares=$(sed -n 2p ${PROTEINONE%.*}.fa_${PROTEINTWO%.*}.fa-coev_inter.csv | awk '{print $4}')
-  echo "${PROTEINONE%.*}.fa ${PROTEINTWO%.*}.fa $pairsNumber $totCompares" >> $TMP/$RESULTS/chi/proteins/${PROTEINONE%.*}.fa.tsv
-  echo "${PROTEINTWO%.*}.fa ${PROTEINONE%.*}.fa $pairsNumber $totCompares" >> $TMP/$RESULTS/chi/proteins/${PROTEINTWO%.*}.fa.tsv
-  
-  # Run Luqman's script for Bonferroni & co correction of p-values
-  echo -e "Running R for Bonferroni correction for $coevPair"
-  Rscript $CWD/R/AdjPval.R bothWays.tsv bothWays-corrected.tsv
-  cd ..
+    # How many pairs do we have left? This is needed for Chi^2 and this is
+    # how CAPS2 counts pairs. Also get the totalcomp and export it.
+    pairsNumber=$(sed 1d bothWays.tsv | awk '{print $3}' | datamash count 1)
+    totCompares=$(sed -n 2p ${PROTEINONE%.*}.fa_${PROTEINTWO%.*}.fa-coev_inter.csv | awk '{print $4}')
+    echo "${PROTEINONE%.*}.fa ${PROTEINTWO%.*}.fa $pairsNumber $totCompares" >> $TMP/$RESULTS/chi/proteins/${PROTEINONE%.*}.fa.tsv
+    echo "${PROTEINTWO%.*}.fa ${PROTEINONE%.*}.fa $pairsNumber $totCompares" >> $TMP/$RESULTS/chi/proteins/${PROTEINTWO%.*}.fa.tsv
+    cd ..
+  elif [ ! -f bothWays.tsv ]; then
+    "Coevolution found but no match bidirectionally for $coevPair"
+    cd ..
+    mkdir -p $TMP/$RESULTS/noBothWays
+    mv $coevPair $TMP/$RESULTS/noBothWays
+  else
+    echo "Something went wrong at noBothWays"
+  fi
 }
 
 # get the amino acid from the reference organism's sequence and calculate
@@ -192,6 +210,11 @@ results_cleanup() {
 extract_columns_stats(){
   local coevPair="${1}"
   cd $coevPair
+  
+  # Run Luqman's script for Bonferroni & co correction of p-values
+  echo -e "Running R for Bonferroni correction for $coevPair"
+  Rscript $CWD/R/AdjPval.R bothWays.tsv bothWays-corrected.tsv
+  
   sed 1d bothWays-corrected.tsv | while read -r msa1 msa2 colA realA colB realB corr boot p_value bonferroni holm bh hochberg hommel by fdr; do
     
     # make sure the amino acid position exists in the reference organism
