@@ -321,31 +321,39 @@ protein_pairs_stats() {
   
   #coevNumber=$(awk '{print $3}' $coevPair/summary-${PVALUE}-${BONFERRONI}.tsv | datamash count 1)
 
+#       gblocksMIN=$(awk '{print $7}' $coevPair/summary-${PVALUE}-${BONFERRONI}.tsv | datamash min 1)
+#       gblocksMAX=$(awk '{print $7}' $coevPair/summary-${PVALUE}-${BONFERRONI}.tsv | datamash max 1)
+#      gblocksMEAN=$(awk '{print $7}' $coevPair/summary-${PVALUE}-${BONFERRONI}.tsv | datamash mean 1)
+#      gblocksSDEV=$(awk '{print $7}' $coevPair/summary-${PVALUE}-${BONFERRONI}.tsv | datamash sstdev 1)
+
+         GapsMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $11}' | datamash min 1)
+         GapsMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $11}' | datamash max 1)
+        GapsMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $11}' | datamash mean 1)
+
+         DivsMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $12}' | datamash min 1)
+	 DivsMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $12}' | datamash max 1)
+	DivsMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $12}' | datamash mean 1)
+
         cCoevMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $15}' | datamash min 1)
         cCoevMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $15}' | datamash max 1)
        cCoevMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $15}' | datamash mean 1)
        #cCoevSDEV=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $15}' | datamash sstdev 1)
 
-         bootMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $18}' | datamash min 1)
-         bootMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $18}' | datamash max 1)
-        bootMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $18}' | datamash mean 1)
+         bootMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $16}' | datamash min 1)
+         bootMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $16}' | datamash max 1)
+        bootMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $16}' | datamash mean 1)
 	#bootSDEV=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $18}' | datamash sstdev 1)
        
-        pMeanMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $19}' | datamash min 1)
-        pMeanMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $19}' | datamash max 1)
-       pMeanMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $19}' | datamash mean 1)
+        pMeanMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $17}' | datamash min 1)
+        pMeanMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $17}' | datamash max 1)
+       pMeanMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $17}' | datamash mean 1)
        #pMeanSDEV=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $19}' | datamash sstdev 1)
        
-   BonferroniMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $20}' | datamash min 1)
-   BonferroniMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $20}' | datamash max 1)
-  BonferroniMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $20}' | datamash mean 1)
+   BonferroniMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $18}' | datamash min 1)
+   BonferroniMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $18}' | datamash max 1)
+  BonferroniMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $18}' | datamash mean 1)
   #BonferroniSDEV=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $20}' | datamash sstdev 1)
 
-#       gblocksMIN=$(awk '{print $7}' $coevPair/summary-${PVALUE}-${BONFERRONI}.tsv | datamash min 1)
-#       gblocksMAX=$(awk '{print $7}' $coevPair/summary-${PVALUE}-${BONFERRONI}.tsv | datamash max 1)
-#      gblocksMEAN=$(awk '{print $7}' $coevPair/summary-${PVALUE}-${BONFERRONI}.tsv | datamash mean 1)
-#      gblocksSDEV=$(awk '{print $7}' $coevPair/summary-${PVALUE}-${BONFERRONI}.tsv | datamash sstdev 1)
-     
 #          coevMIN=$(awk '{print $8}' $coevPair/summary-${PVALUE}-${BONFERRONI}.tsv | datamash min 1)
 #          coevMAX=$(awk '{print $8}' $coevPair/summary-${PVALUE}-${BONFERRONI}.tsv | datamash max 1)
 #         coevMEAN=$(awk '{print $8}' $coevPair/summary-${PVALUE}-${BONFERRONI}.tsv | datamash mean 1)
@@ -368,7 +376,7 @@ protein_pairs_stats() {
       
       # Collect data
       #echo "$msa_1 $msa_2 $coevThr $avgCor $avgSignCor $totCompar $coevNumAll $coevMIN $coevMAX $coevMEAN $coevSDEV $coevNumber $cCoevMIN $cCoevMAX $cCoevMEAN $cCoevSDEV $bootMIN $bootMAX $bootMEAN $bootSDEV $pMeanMIN $pMeanMAX $pMeanMEAN $pMeanSDEV $BonferroniMIN $BonferroniMAX $BonferroniMEAN $BonferroniSDEV $gblocksMIN $gblocksMAX $gblocksMEAN $gblocksSDEV $chiboth $chiboth_fin" >> $EOUT
-      echo "$msa_1 $msa_2 $coevThr $averR $averSigR $totCompar $sitesCountA $sitesCountB $cCoevMIN $cCoevMAX $cCoevMEAN $bootMIN $bootMAX $bootMEAN $pMeanMIN $pMeanMAX $pMeanMEAN $BonferroniMIN $BonferroniMAX $BonferroniMEAN $chiboth_fin" >> $EOUT
+      echo "$msa_1 $msa_2 $coevThr $averR $averSigR $totCompar $sitesCountA $sitesCountB $GapsMIN $GapsMAX $GapsMEAN $DivsMIN $DivsMAX $DivsMEAN $cCoevMIN $cCoevMAX $cCoevMEAN $bootMIN $bootMAX $bootMEAN $pMeanMIN $pMeanMAX $pMeanMEAN $BonferroniMIN $BonferroniMAX $BonferroniMEAN $chiboth_fin" >> $EOUT
       echo "${msa_1} ${msa_2} added"
 cd ..
 }
@@ -382,7 +390,7 @@ summary_cleanup(){
     done
     sed -i "1i Name1 msa1 msa2 Name2 colA realA colB realB seq1 seq2 gblscore1 gblscore2 GapsAB DivsAB corrT corr normC boot p_value bonferroni holm bh hochberg hommel by fdr" $TMP/$RESULTS/allResidues.tsv
     sed -i \
-    "1i Name1 msa1 Name2 msa2 coevThr averR averSigR totCompar sitesCountA sitesCountB cCoevMIN cCoevMAX cCoevMEAN bootMIN bootMAX bootMEAN pMeanMIN pMeanMAX pMeanMEAN BonferroniMIN BonferroniMAX BonferroniMEAN chiboth_fin" \
+    "1i Name1 msa1 Name2 msa2 coevThr averR averSigR totCompar sitesCountA sitesCountB GapsMIN GapsMAX GapsMEAN DivsMIN DivsMAX DivsMEAN cCoevMIN cCoevMAX cCoevMEAN bootMIN bootMAX bootMEAN p_valueMIN p_valueMAX p_valueMEAN BonferroniMIN BonferroniMAX BonferroniMEAN chiboth_fin" \
     $EOUT
   else
     echo "No pairs-P${PVALUE}-B${BONFERRONI}.tsv or $TMP/$RESULTS/filtered-P${PVALUE}-gaps${EGAPS}-pDiff${EPDIF}-Bonf${BONFERRONI}.tsv!"
