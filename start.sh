@@ -25,7 +25,6 @@ VER="0.2.0beta" # version
 . $CWD/functions/pairing.sh
 . $CWD/functions/caps.sh
 . $CWD/functions/results.sh
-. $CWD/functions/network.sh
 . $CWD/functions/check.sh
 . $CWD/functions/chi2.sh
 
@@ -188,7 +187,6 @@ SEQOPT=( "Pair UniProt <-> OrthoDB <-> OGuniqueID"
          "[RUN] CAPS run (alpha: $ALPHA, $MSAMETHOD, $TREESCAPS)"
          "[RES] Inspect CAPS results"
          "[RES] Generate columns stats"
-         "[XML] Process CAPS results"
          "[Exit script]" )
 
 select opt in "${SEQOPT[@]}" ; do
@@ -450,16 +448,12 @@ echo -e "\nDone with 12"
 ;;
 
 "[RES] Generate columns stats")
-#mkdir -p $TMP/$RESULTS/chi/{back_calc,back_calc_final,chi_test,chi_test_final,proteins,proteinsFinal}
-#coev_inter_collect
-# #
+## Chi tests
 
-## Chi tests ##########################################################
 mkdir -p $TMP/$RESULTS/chi/{back_calc_final,chi_test_final}
 cd $TMP/$RESULTS/chi/proteins
 protInt=$( ls ./ )
 parallel $CORESCAPS calc_back_final ::: "$protInt"
-#######################################################################
 
 cd $TMP/$RESULTS/coev/
 for resfold in * ; do
@@ -472,52 +466,7 @@ done
 
 summary_cleanup
 
-#coev_inter_chi_results
-
-# cd $TMP/$RESULTS/coev/
-# for resfold in * ; do
-#   echo -e "Processing $resfold"
-#   cd $resfold
-#   SUBFOLD=$( ls ./ )
-#   parallel $CORESCAPS adj_pVal ::: "$SUBFOLD"
-#   parallel $CORESCAPS extract_columns ::: "$SUBFOLD"
-#   parallel $CORESCAPS columns_stats ::: "$SUBFOLD"
-#   #parallel $CORESCAPS post_run_protein_pairs_stats ::: "$SUBFOLD"
-#   cd ..
-# done
-#
-# cd $TMP/$RESULTS/chi/proteinsFinal
-# protInt=$( ls ./ )
-# parallel $CORESCAPS calc_back_final ::: "$protInt"
-# cd ..
-# #coev_inter_chi_results_final
-#
-# cd $TMP/$RESULTS/coev/
-# for resfold in * ; do
-#   echo -e "Processing $resfold"
-#   cd $resfold
-#   SUBFOLD=$( ls ./ )
-# parallel $CORESCAPS exp_column_stats ::: "$SUBFOLD"
-#   cd ..
-# done
-#
-# summary_cleanup
-#
-# #post_run_protein_pairs
-#
-# #mkdir -p $TMP/$RESULTS/pairs-P${PVALUE}-B${BONFERRONI}
-# #cd $TMP/$RESULTS/pairs-P${PVALUE}-B${BONFERRONI}
-# #pairzInt=$( ls ./ )
-# #parallel $CORESCAPS post_run_protein_pairs_stats ::: "$pairzInt"
-# #add_headers_pairz
-
 echo -e "\nDone with 13"
-;;
-
-"[XML] Process CAPS results")
-write_xml
-write_filtered_xml
-echo -e "\nDone with 14"
 ;;
 
 "[Exit script]")
