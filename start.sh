@@ -185,7 +185,7 @@ SEQOPT=( "Pair UniProt <-> OrthoDB <-> OGuniqueID"
          "[TRE] Prepare trees ($TREESCAPS, $MSAMETHOD, $PHYMLGUIDE, $TREESROOT)"
          "[RUN] Create pairs ($PAIRINGMANNER)"
          "[RUN] CAPS run (alpha: $ALPHA, $MSAMETHOD, $TREESCAPS)"
-         "[RES] Inspect CAPS results"
+         "[RUN] Inspect results and re-run CAPS (REV)"
          "[RES] Generate columns stats"
          "[Exit script]" )
 
@@ -393,7 +393,7 @@ done
 echo -e "\nDone with 11"
 ;;
 
-"[RES] Inspect CAPS results")
+"[RES] Inspect results and re-run CAPS (REV)")
 mkdir -p $TMP/$RESULTS/{fail,nocoev,coev,columns}
 cd $TMP/$CAPSM/
 for folder in * ; do
@@ -405,6 +405,7 @@ for folder in * ; do
 done
 
 caps_set_rev
+
 for folder in $TMP/$RESULTS/coev/* ; do
   cd $folder
   echo -e "Processing \e[92m${folder}\e[39m"
