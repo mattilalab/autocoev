@@ -291,9 +291,9 @@ extract_columns_stats(){
         echo "No amino acid pairs passed the Bonferroni correction for $msa1 $msa2!"
       fi
       echo "$msa1 $msa2 $colA $realA $colB $realB $seq1 $seq2 $gblscore1 $gblscore2 $gblscore $GapsAB $DivsAB $corrT $corr $normC $boot $p_value $bonferroni $holm $bh $hochberg $hommel $by $fdr" >> bothWays-corrected-columns.tsv
-      echo "$msa1 $msa2 $colA $realA $colB $realB $seq1 $seq2 $gblscore1 $gblscore2 $gblscore $GapsAB $DivsAB $corrT $corr $normC $boot $p_value $bonferroni $holm $bh $hochberg $hommel $by $fdr" >> $TMP/$RESULTS/allResidues.tsv
+      echo "$msa1 $msa2 $colA $realA $colB $realB $seq1 $seq2 $gblscore $GapsAB $DivsAB $corrT $corr $normC $boot $p_value $bonferroni $holm $bh $hochberg $hommel $by $fdr" >> $TMP/$RESULTS/allResidues.tsv
     done
-    sed -i "1i msa1 msa2 colA realA colB realB seq1 seq2 gblscore1 gblscore2 gblscore GapsAB DivsAB corrT corr normC boot p_value bonferroni holm bh hochberg hommel by fdr" bothWays-corrected-columns.tsv
+    sed -i "1i msaA msaB colA realA colB realB seqA seqB gblAB GapsAB DivsAB corrT corr normC boot p_value bonferroni holm bh hochberg hommel by fdr" bothWays-corrected-columns.tsv
   elif [ ! -d "$coevPair" ]; then
     echo "No protein pairs"
   else
@@ -305,6 +305,8 @@ cd ..
 # Generate and export column statistics
 protein_pairs_stats() {
   local coevPair="${1}"
+
+  # Do we have protein pairs left?
   if [ -d "$coevPair" ]; then
     cd $coevPair
 
@@ -315,7 +317,7 @@ protein_pairs_stats() {
     ### Count the number of co-evolving sites from each protein. We have headers, so skip them...
     sitesCountA=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $4}' | datamash countunique 1)
     sitesCountB=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $6}' | datamash countunique 1) 
- 
+
     ### Report total comparisons (MSA1*MSA2). They are the same FWD and REV.
     totCompar=$(sed -n '2p' ${msa_1}.fa_${msa_2}.fa-coev_inter.csv | awk '{print $4}')
 
@@ -332,6 +334,7 @@ protein_pairs_stats() {
     avgSigRb=$(printf "%1.10f" `sed -n '2p' ${msa_2}.fa_${msa_1}.fa-coev_inter.csv | awk '{print $8}'`)
     averSigR=$(printf "${avgSigRa}\n $avgSigRb" | datamash mean 1)
   
+    ### Gblocks scores
     gblocksMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $11}' | datamash min 1)
     gblocksMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $11}' | datamash max 1)
     gblocksMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $11}' | datamash mean 1)
@@ -371,12 +374,13 @@ protein_pairs_stats() {
     reverse_fin=$(grep "${msa_2} ${msa_1}" $TMP/$RESULTS/chi/chi_test_final/${msa_2}.fa.tsv | awk '{print $7}')
     chiboth_fin=$(echo "$forward_fin + $reverse_fin" |bc -l)
       
-    # Collect data
-    echo "$msa_1 $msa_2 $coevThr $averR $averSigR $totCompar $sitesCountA $sitesCountB $gblscore $GapsMIN $GapsMAX $GapsMEAN $DivsMIN $DivsMAX $DivsMEAN $cCoevMIN $cCoevMAX $cCoevMEAN $bootMIN $bootMAX $bootMEAN $pMeanMIN $pMeanMAX $pMeanMEAN $BonferroniMIN $BonferroniMAX $BonferroniMEAN $chiboth_fin" >> $EOUT
-    echo "${msa_1} ${msa_2} added"
+    # Collect data in a single file, which can be imported in Cytoscape
+    echo "$msa_1 $msa_2 $coevThr $averR $averSigR $totCompar $sitesCountA $sitesCountB $gblocksMIN $gblocksMAX $gblocksMEAN $GapsMIN $GapsMAX $GapsMEAN $DivsMIN $DivsMAX $DivsMEAN $cCoevMIN $cCoevMAX $cCoevMEAN $bootMIN $bootMAX $bootMEAN $pMeanMIN $pMeanMAX $pMeanMEAN $BonferroniMIN $BonferroniMAX $BonferroniMEAN $chiboth_fin" >> $EOUT
+    echo "$folder/${msa_1} ${msa_2} added"
     
     cd ..
-  
+
+  # Skip if $folder was left without protein pairs  
   elif [ ! -d "$coevPair" ]; then
     echo "No protein pairs"
   else
@@ -391,9 +395,9 @@ summary_cleanup(){
       sed -i "s/$idxml/$namexml $idxml/g" $TMP/$RESULTS/allResidues.tsv
       sed -i "s/$idxml/$namexml $idxml/g" $EOUT
     done
-    sed -i "1i Name1 msa1 msa2 Name2 colA realA colB realB seq1 seq2 gblscore1 gblscore2 gblscore GapsAB DivsAB corrT corr normC boot p_value bonferroni holm bh hochberg hommel by fdr" $TMP/$RESULTS/allResidues.tsv
+    sed -i "1i NameA msaA msaB NameB colA realA colB realB seqA seqB GblAB GapsAB DivsAB corrT corr normC boot p_value bonferroni holm bh hochberg hommel by fdr" $TMP/$RESULTS/allResidues.tsv
     sed -i \
-    "1i Name1 msa1 Name2 msa2 coevThr averR averSigR totCompar sitesCountA sitesCountB GapsMIN GapsMAX GapsMEAN DivsMIN DivsMAX DivsMEAN cCoevMIN cCoevMAX cCoevMEAN bootMIN bootMAX bootMEAN p_valueMIN p_valueMAX p_valueMEAN BonferroniMIN BonferroniMAX BonferroniMEAN chiboth_fin" \
+    "1i NameA msaA NameB msaB coevThr averR averSigR totCompar sitesCountA sitesCountB gblocksMIN gblocksMAX gblocksMEAN GapsMIN GapsMAX GapsMEAN DivsMIN DivsMAX DivsMEAN cCoevMIN cCoevMAX cCoevMEAN bootMIN bootMAX bootMEAN p_valueMIN p_valueMAX p_valueMEAN BonferroniMIN BonferroniMAX BonferroniMEAN chiboth_fin" \
     $EOUT
   else
     echo "No Protein pairs!"
