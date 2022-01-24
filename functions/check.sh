@@ -2,7 +2,8 @@
 
 EXELIST=( blastp blast_formatter $CAPS datamash fastafetch \
           fastaindex Gblocks mafft makeblastdb muscle parallel phyml \
-	  prank seqkit squizz treebest )
+	  prank R seqkit squizz treebest \
+	  /usr/lib/guidance/www/Guidance/guidance.pl )
 
 check_bin(){
   for e in ${EXELIST[@]} ; do

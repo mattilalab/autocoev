@@ -249,8 +249,8 @@ extract_columns_stats(){
           echo "Check Gblocks scores!"
         fi
       
-        ### Calculate mean Gblocks score. Do we really need this?
-        #gblscore=$(printf "${gblscore1}\n $gblscore2" | datamash mean 1)
+        # Calculate mean Gblocks score. Do we really need this?
+        gblscore=$(printf "${gblscore1}\n $gblscore2" | datamash mean 1)
       
         # Extract MSA columns for the co-evolving amino acids  
         echo -e "Extracting $colA-$colB"
@@ -290,10 +290,10 @@ extract_columns_stats(){
         # Make it echo sth else...
         echo "No amino acid pairs passed the Bonferroni correction for $msa1 $msa2!"
       fi
-      echo "$msa1 $msa2 $colA $realA $colB $realB $seq1 $seq2 $gblscore1 $gblscore2 $GapsAB $DivsAB $corrT $corr $normC $boot $p_value $bonferroni $holm $bh $hochberg $hommel $by $fdr" >> bothWays-corrected-columns.tsv
-      echo "$msa1 $msa2 $colA $realA $colB $realB $seq1 $seq2 $gblscore1 $gblscore2 $GapsAB $DivsAB $corrT $corr $normC $boot $p_value $bonferroni $holm $bh $hochberg $hommel $by $fdr" >> $TMP/$RESULTS/allResidues.tsv
+      echo "$msa1 $msa2 $colA $realA $colB $realB $seq1 $seq2 $gblscore1 $gblscore2 $gblscore $GapsAB $DivsAB $corrT $corr $normC $boot $p_value $bonferroni $holm $bh $hochberg $hommel $by $fdr" >> bothWays-corrected-columns.tsv
+      echo "$msa1 $msa2 $colA $realA $colB $realB $seq1 $seq2 $gblscore1 $gblscore2 $gblscore $GapsAB $DivsAB $corrT $corr $normC $boot $p_value $bonferroni $holm $bh $hochberg $hommel $by $fdr" >> $TMP/$RESULTS/allResidues.tsv
     done
-    sed -i "1i msa1 msa2 colA realA colB realB seq1 seq2 gblscore1 gblscore2 GapsAB DivsAB corrT corr normC boot p_value bonferroni holm bh hochberg hommel by fdr" bothWays-corrected-columns.tsv
+    sed -i "1i msa1 msa2 colA realA colB realB seq1 seq2 gblscore1 gblscore2 gblscore GapsAB DivsAB corrT corr normC boot p_value bonferroni holm bh hochberg hommel by fdr" bothWays-corrected-columns.tsv
   elif [ ! -d "$coevPair" ]; then
     echo "No protein pairs"
   else
@@ -332,40 +332,39 @@ protein_pairs_stats() {
     avgSigRb=$(printf "%1.10f" `sed -n '2p' ${msa_2}.fa_${msa_1}.fa-coev_inter.csv | awk '{print $8}'`)
     averSigR=$(printf "${avgSigRa}\n $avgSigRb" | datamash mean 1)
   
-#       gblocksMIN=$(awk '{print $7}' $coevPair/summary-${PVALUE}-${BONFERRONI}.tsv | datamash min 1)
-#       gblocksMAX=$(awk '{print $7}' $coevPair/summary-${PVALUE}-${BONFERRONI}.tsv | datamash max 1)
-#      gblocksMEAN=$(awk '{print $7}' $coevPair/summary-${PVALUE}-${BONFERRONI}.tsv | datamash mean 1)
-#      gblocksSDEV=$(awk '{print $7}' $coevPair/summary-${PVALUE}-${BONFERRONI}.tsv | datamash sstdev 1)
+    gblocksMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $11}' | datamash min 1)
+    gblocksMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $11}' | datamash max 1)
+    gblocksMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $11}' | datamash mean 1)
 
     # MSA column gaps
-    GapsMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $11}' | datamash min 1)
-    GapsMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $11}' | datamash max 1)
-    GapsMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $11}' | datamash mean 1)
+    GapsMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $12}' | datamash min 1)
+    GapsMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $12}' | datamash max 1)
+    GapsMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $12}' | datamash mean 1)
 
     # MSA column diversity  
-    DivsMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $12}' | datamash min 1)
-    DivsMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $12}' | datamash max 1)
-    DivsMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $12}' | datamash mean 1)
+    DivsMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $13}' | datamash min 1)
+    DivsMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $13}' | datamash max 1)
+    DivsMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $13}' | datamash mean 1)
 
     # Normalized coevolution, corrected to threshold
-    cCoevMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $15}' | datamash min 1)
-    cCoevMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $15}' | datamash max 1)
-    cCoevMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $15}' | datamash mean 1)
+    cCoevMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $16}' | datamash min 1)
+    cCoevMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $16}' | datamash max 1)
+    cCoevMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $16}' | datamash mean 1)
 
     # Bootstrap of CAPS
-    bootMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $16}' | datamash min 1)
-    bootMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $16}' | datamash max 1)
-    bootMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $16}' | datamash mean 1)
+    bootMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $17}' | datamash min 1)
+    bootMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $17}' | datamash max 1)
+    bootMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $17}' | datamash mean 1)
 
     # Mean p-value of both FWD and REV coevolution run       
-    pMeanMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $17}' | datamash min 1)
-    pMeanMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $17}' | datamash max 1)
-    pMeanMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $17}' | datamash mean 1)
+    pMeanMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $18}' | datamash min 1)
+    pMeanMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $18}' | datamash max 1)
+    pMeanMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $18}' | datamash mean 1)
 
     # Bonferroni corrected p-values, same as above       
-    BonferroniMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $18}' | datamash min 1)
-    BonferroniMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $18}' | datamash max 1)
-    BonferroniMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $18}' | datamash mean 1)
+    BonferroniMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $19}' | datamash min 1)
+    BonferroniMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $19}' | datamash max 1)
+    BonferroniMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $19}' | datamash mean 1)
 
     # Add score after Chi squared based on filtered results
     forward_fin=$(grep "${msa_1} ${msa_2}" $TMP/$RESULTS/chi/chi_test_final/${msa_1}.fa.tsv | awk '{print $7}')
@@ -373,7 +372,7 @@ protein_pairs_stats() {
     chiboth_fin=$(echo "$forward_fin + $reverse_fin" |bc -l)
       
     # Collect data
-    echo "$msa_1 $msa_2 $coevThr $averR $averSigR $totCompar $sitesCountA $sitesCountB $GapsMIN $GapsMAX $GapsMEAN $DivsMIN $DivsMAX $DivsMEAN $cCoevMIN $cCoevMAX $cCoevMEAN $bootMIN $bootMAX $bootMEAN $pMeanMIN $pMeanMAX $pMeanMEAN $BonferroniMIN $BonferroniMAX $BonferroniMEAN $chiboth_fin" >> $EOUT
+    echo "$msa_1 $msa_2 $coevThr $averR $averSigR $totCompar $sitesCountA $sitesCountB $gblscore $GapsMIN $GapsMAX $GapsMEAN $DivsMIN $DivsMAX $DivsMEAN $cCoevMIN $cCoevMAX $cCoevMEAN $bootMIN $bootMAX $bootMEAN $pMeanMIN $pMeanMAX $pMeanMEAN $BonferroniMIN $BonferroniMAX $BonferroniMEAN $chiboth_fin" >> $EOUT
     echo "${msa_1} ${msa_2} added"
     
     cd ..
@@ -392,7 +391,7 @@ summary_cleanup(){
       sed -i "s/$idxml/$namexml $idxml/g" $TMP/$RESULTS/allResidues.tsv
       sed -i "s/$idxml/$namexml $idxml/g" $EOUT
     done
-    sed -i "1i Name1 msa1 msa2 Name2 colA realA colB realB seq1 seq2 gblscore1 gblscore2 GapsAB DivsAB corrT corr normC boot p_value bonferroni holm bh hochberg hommel by fdr" $TMP/$RESULTS/allResidues.tsv
+    sed -i "1i Name1 msa1 msa2 Name2 colA realA colB realB seq1 seq2 gblscore1 gblscore2 gblscore GapsAB DivsAB corrT corr normC boot p_value bonferroni holm bh hochberg hommel by fdr" $TMP/$RESULTS/allResidues.tsv
     sed -i \
     "1i Name1 msa1 Name2 msa2 coevThr averR averSigR totCompar sitesCountA sitesCountB GapsMIN GapsMAX GapsMEAN DivsMIN DivsMAX DivsMEAN cCoevMIN cCoevMAX cCoevMEAN bootMIN bootMAX bootMEAN p_valueMIN p_valueMAX p_valueMEAN BonferroniMIN BonferroniMAX BonferroniMEAN chiboth_fin" \
     $EOUT
