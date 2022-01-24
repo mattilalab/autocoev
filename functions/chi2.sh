@@ -17,7 +17,7 @@ cat $PROTCHI | while read -r Seq1 Seq2 numPairs totalComp ; do
   back_calc=$(printf "%1.10f" `echo "($numPairs)/($totalComp)" |bc -l`)
   exp=$(printf "%1.10f" `echo "($totalComp)*($file_back)" |bc -l`)
   if (( $(echo "$exp > 0" |bc -l) )); then
-    echo "[COEVOL] $PROTCHI"
+    #echo "[COEVOL] $PROTCHI"
     chi=$(printf "%1.10f" `echo "($numPairs - $exp)^2/($exp)" |bc -l`)
     if (( $(echo "$numPairs > $exp" |bc -l) && $(echo "$numPairs >= 3.84146" |bc -l) )); then
       echo "${Seq1%.*} ${Seq2%.*} $back_calc $file_back $exp $chi 0.5" >> $TMP/$RESULTS/chi/chi_final.tsv
@@ -27,7 +27,7 @@ cat $PROTCHI | while read -r Seq1 Seq2 numPairs totalComp ; do
       echo "${Seq1%.*} ${Seq2%.*} $back_calc $file_back $exp $chi 0.0" >> $TMP/$RESULTS/chi/chi_final.tsv
     fi
   else
-    echo "[NOCOEV] $PROTCHI"
+    #echo "[NOCOEV] $PROTCHI"
     echo "${Seq1%.*} ${Seq2%.*} $back_calc $file_back $exp nan 0.0" >> $TMP/$RESULTS/chi/chi_test_final/${PROTCHI%.*}.tsv
   fi
 done

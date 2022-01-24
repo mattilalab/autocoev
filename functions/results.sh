@@ -16,12 +16,12 @@ local pair="${1}"
     
     # Did the run fail? Is there any output at all on row 2 of coev_inter.csv?
     if [ -z "${SUMMARY}" ]; then
-      echo -e "[\e[91mFAILED\e[39m] Copying pair where CAPS failed: $pair"
+      echo -e "[\e[91mFAILED RUN\e[39m] $pair"
       cp -a $pair $TMP/$RESULTS/fail
       
     # Is there coevolution detected at all? If we have an output, is the number of coevolving amino acids 0?
     elif [ "$numPairs" -eq 0 ]; then
-      echo -e "[\e[34mNOCOEV\e[39m] No co-evolving pairs found for: $pair"
+      echo -e "[\e[34mNON-COEVOL\e[39m] $pair"
       
       ### Chi^2 ### Export these, since they are needed for the Chi^2 test later (background calculation)
       mkdir -p $TMP/$RESULTS/chi/proteins/
@@ -34,7 +34,6 @@ local pair="${1}"
 
     # If coevolution was detected, copy to a separate folder of results
     elif [ "$numPairs" -gt 0 ]; then
-      echo -e "[\e[92mCOEVOL\e[39m] Copying pair with co-evolution: $pair"
       mkdir -p $TMP/$RESULTS/coev/$folder
       cp -a $pair $TMP/$RESULTS/coev/$folder
      
@@ -49,12 +48,13 @@ local pair="${1}"
     
       # If we have PhyML generated trees, do the same for them
       if [ "$TREESCAPS" = "phyml" ]; then
+        echo -e "[REVPREPARE] $pair (PhyML trees)"
         mkdir -p ../tre-rev
 	cd ../tre
 	cp ${firstMSA%.*}.tre ../tre-rev/b_${firstMSA%.*}.tre
 	cp ${secondMSA%.*}.tre ../tre-rev/a_${secondMSA%.*}.tre
       elif [ "$TREESCAPS" = "auto" ]; then
-        echo "CAPS generated trees automatically"
+        echo -e "[REVPREPARE] $pair (auto trees)"
       else
         echo "Something went wronng at trees REV step!"
       fi
@@ -71,10 +71,10 @@ local pair="${1}"
   SUMMARY=$(sed -n '2p' $pair/coev_inter.csv)
   while read -r Seq1 Seq2 numPairs totalComp CutOff thresholdR averageR averageSigR tree1length tree2length gapThreshold bootCutOff DistanceCoef ; do
     if [ -z "${SUMMARY}" ]; then
-      echo -e "[\e[91mFAILED\e[39m] Copying pair where CAPS failed: $pair"
+      echo -e "[\e[91mFAILED RUN\e[39m]: $pair"
       mv $pair $TMP/$RESULTS/fail
     elif [ "$numPairs" -eq 0 ]; then
-      echo -e "[\e[34mNOCOEV\e[39m] No co-evolving pairs found for: $pair"
+      echo -e "[\e[34mNON COEVOL\e[39m]: $pair"
       mkdir -p $TMP/$RESULTS/nocoev/$folder
       mv $pair $TMP/$RESULTS/nocoev/$folder
       
@@ -83,13 +83,13 @@ local pair="${1}"
       echo "${Seq2#*_} ${Seq1#*_} $numPairs $totalComp" >> $TMP/$RESULTS/chi/proteins/${Seq2#*_}.tsv
       
      elif [ "$numPairs" -gt 0 ]; then
-       echo -e "[\e[92mCOEVOL\e[39m]: $pair"
+       echo -e "[COEVOL REV] $pair"
        # https://stackoverflow.com/a/15149278
        cd $pair
        mv coev_inter.csv ${Seq1#*_}_${Seq2#*_}-coev_inter.csv  
        mv ${Seq1}_${Seq2}.out ${Seq1#*_}_${Seq2#*_}.out
     else
-      echo -e "Something went wrong for $pair ... Check!"
+      echo -e "Something went wrong for $folder/$pair ... Check!"
     fi
   done <<< $(echo "$SUMMARY")
 }
@@ -117,7 +117,7 @@ results_cleanup() {
   sed -i "s/  / /g" ${PROTEINONE%.*}_${PROTEINTWO%.*}.clean
   sed -i "s/^/${PROTEINONE%.*} ${PROTEINTWO%.*} /" ${PROTEINONE%.*}_${PROTEINTWO%.*}.clean
   sed -i "s/\.fa/ /g" ${PROTEINONE%.*}_${PROTEINTWO%.*}.clean
-  sed -i "1i msa1 msa2 colA realA colB realB meanA meanB corr boot pvalA pvalB pMean corr1 corr2" ${PROTEINONE%.*}_${PROTEINTWO%.*}.clean
+  sed -i "1i msaA msaB colA realA colB realB meanA meanB corr boot pvalA pvalB pMean corrA corrB" ${PROTEINONE%.*}_${PROTEINTWO%.*}.clean
   
   # "Reverse" Protein B vs Protein A
   cp ${PROTEINTWO%.*}.fa_${PROTEINONE%.*}.fa.out ${PROTEINTWO%.*}_${PROTEINONE%.*}.clean
@@ -133,11 +133,11 @@ results_cleanup() {
   sed -i "s/  / /g" ${PROTEINTWO%.*}_${PROTEINONE%.*}.clean
   sed -i "s/^/${PROTEINTWO%.*} ${PROTEINONE%.*} /" ${PROTEINTWO%.*}_${PROTEINONE%.*}.clean
   sed -i "s/\.fa/ /g" ${PROTEINTWO%.*}_${PROTEINONE%.*}.clean
-  sed -i "1i msa1 msa2 colA realA colB realB meanA meanB corr boot pvalA pvalB pMean corr1 corr2" ${PROTEINTWO%.*}_${PROTEINONE%.*}.clean
+  sed -i "1i msaA msaB colA realA colB realB meanA meanB corr boot pvalA pvalB pMean corrA corrB" ${PROTEINTWO%.*}_${PROTEINONE%.*}.clean
   
   sed 1d ${PROTEINONE%.*}_${PROTEINTWO%.*}.clean | while read -r msa1 msa2 colA realA colB realB meanA meanB corr boot pvalA pvalB pMean corr1 corr2 ; do
     if rowmatch=$(LANG=C grep -F -w "$msa2 $msa1 $colB $realB $colA $realA" ${PROTEINTWO%.*}_${PROTEINONE%.*}.clean) ; then
-      echo "Found a match bothways: $rowmatch"
+      #echo "Found a match bothways: $rowmatch"
     
       # Do decimal values for fwd. This is from the while read loop
        fcorrdec=$(printf "%1.10f" $corr)
@@ -171,26 +171,24 @@ results_cleanup() {
           #pvalBdec=$(printf "${fpvalBdec}\n $rpvalBdec" | datamash mean 1)
           pMeandec=$(printf "${fpMeandec}\n ${rpMeandec}" | datamash mean 1)
       
-        echo "Adding $pMeandec"
-        
-	#echo "$msa1 $msa2 $colA $realA $colB $realB $meanA $meanB $corrdec $boot $pvalAdec $pvalBdec $pMeandec $corr1dec $corr2dec" >> bothWays.tsv
         echo "$msa1 $msa2 $colA $realA $colB $realB $corrdec $boot $pMeandec" >> bothWays.tsv
+        echo -e "[COEV RESID] $coevPair"
 	
        elif (( $(echo "$fpMeandec >= $PVALUE" |bc -l) || $(echo "$rpMeandec >= $PVALUE" |bc -l) || \
     	  $(echo "$fcorr1dec <= 0" |bc -l) || $(echo "$rcorr1dec <= 0" |bc -l) || \
 	  $(echo "$rcorr2dec <= 0" |bc -l) || $(echo "$rcorr2dec <= 0" |bc -l) )); then
-	  echo "Skipping $pMeandec"
+	  echo -e "[SKIP RESID] $coevPair"
        else
-         echo "Something went wrong at $coevPair/${PROTEINONE%.*}_${PROTEINTWO%.*}.clean"
+         echo "Something went wrong at $folder/$coevPair/${PROTEINONE%.*}_${PROTEINTWO%.*}.clean"
        fi
     else
-      echo "Did not find a match bothways"
+      echo -e "[NO REVERSE] $coevPair"
     fi
     done
 
-  # Check if we have do-evolving pairs detected bidirectionally
+  # Check if we have co-evolving pairs detected bidirectionally
   if [ -f bothWays.tsv ]; then
-    echo "Found amino acid pairs both ways for $coevPair"
+    echo "[RWD-REV EQ] $coevPair"
     sed -i "1i msa1 msa2 colA realA colB realB corr boot p_value" bothWays.tsv
   
     ### Chi^2 ### How many pairs do we have left? This is how CAPS2
@@ -201,12 +199,12 @@ results_cleanup() {
     echo "${PROTEINTWO%.*}.fa ${PROTEINONE%.*}.fa $pairsNumber $totCompares" >> $TMP/$RESULTS/chi/proteins/${PROTEINTWO%.*}.fa.tsv
     cd ..
   elif [ ! -f bothWays.tsv ]; then
-    "Coevolution found but no match bidirectionally for $coevPair"
+    echo -e "[FW-RE DIFF] $coevPair"
     cd ..
     mkdir -p $TMP/$RESULTS/noBothWays
     mv $coevPair $TMP/$RESULTS/noBothWays
   else
-    echo "Something went wrong at noBothWays"
+    echo "Something went wrong at $folder/$coevPair"
   fi
 }
 
@@ -219,7 +217,7 @@ extract_columns_stats(){
     cd $coevPair
   
     # Run Luqman's script for Bonferroni & co correction of p-values
-    echo -e "Running R for Bonferroni correction for $coevPair"
+    echo -e "[MULTI HYPO] $coevPair"
     Rscript $CWD/functions/AdjPval.R bothWays.tsv bothWays-corrected.tsv
   
     sed 1d bothWays-corrected.tsv | while read -r msa1 msa2 colA realA colB realB corr boot p_value bonferroni holm bh hochberg hommel by fdr; do
@@ -253,7 +251,7 @@ extract_columns_stats(){
         gblscore=$(printf "${gblscore1}\n $gblscore2" | datamash mean 1)
       
         # Extract MSA columns for the co-evolving amino acids  
-        echo -e "Extracting $colA-$colB"
+        echo -e "[PROPERTIES] $coevPair/$colA-$colB"
         cat ./msa/$msa1.fa | seqkit subseq -r ${colA}:${colA} | seqkit sort -o columnStats/$msa1-$colA.txt
         cat ./msa/$msa2.fa | seqkit subseq -r ${colB}:${colB} | seqkit sort -o columnStats/$msa2-$colB.txt
 
@@ -288,7 +286,7 @@ extract_columns_stats(){
         normC=$(printf "%1.10f" `echo "($corr - $corrT)/(1 - $corrT)" |bc -l`)
       else
         # Make it echo sth else...
-        echo "No amino acid pairs passed the Bonferroni correction for $msa1 $msa2!"
+        echo -e "[NOT IN REF] $coevPair/$colA-$colB not in $ORGANISM!"
       fi
       echo "$msa1 $msa2 $colA $realA $colB $realB $seq1 $seq2 $gblscore1 $gblscore2 $gblscore $GapsAB $DivsAB $corrT $corr $normC $boot $p_value $bonferroni $holm $bh $hochberg $hommel $by $fdr" >> bothWays-corrected-columns.tsv
       echo "$msa1 $msa2 $colA $realA $colB $realB $seq1 $seq2 $gblscore $GapsAB $DivsAB $corrT $corr $normC $boot $p_value $bonferroni $holm $bh $hochberg $hommel $by $fdr" >> $TMP/$RESULTS/allResidues.tsv
@@ -376,7 +374,7 @@ protein_pairs_stats() {
       
     # Collect data in a single file, which can be imported in Cytoscape
     echo "$msa_1 $msa_2 $coevThr $averR $averSigR $totCompar $sitesCountA $sitesCountB $gblocksMIN $gblocksMAX $gblocksMEAN $GapsMIN $GapsMAX $GapsMEAN $DivsMIN $DivsMAX $DivsMEAN $cCoevMIN $cCoevMAX $cCoevMEAN $bootMIN $bootMAX $bootMEAN $pMeanMIN $pMeanMAX $pMeanMEAN $BonferroniMIN $BonferroniMAX $BonferroniMEAN $chiboth_fin" >> $EOUT
-    echo "$folder/${msa_1} ${msa_2} added"
+    echo "${msa_1} ${msa_2} added"
     
     cd ..
 
