@@ -393,7 +393,7 @@ done
 echo -e "\nDone with 11"
 ;;
 
-"[RES] Inspect results and re-run CAPS (REV)")
+"[RUN] Inspect results and re-run CAPS (REV)")
 mkdir -p $TMP/$RESULTS/{fail,nocoev,coev,columns}
 cd $TMP/$CAPSM/
 for folder in * ; do
@@ -417,7 +417,6 @@ for folder in $TMP/$RESULTS/coev/* ; do
   echo "" >> $TMP/progress-$ALPHA-$MSAMETHOD-$TREESCAPS.txt
   cd ..
 done
-
 
 for folder in $TMP/$RESULTS/coev/* ; do
 echo -e "Processing $folder"

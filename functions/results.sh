@@ -220,7 +220,7 @@ extract_columns_stats(){
   
     # Run Luqman's script for Bonferroni & co correction of p-values
     echo -e "Running R for Bonferroni correction for $coevPair"
-    Rscript $CWD/R/AdjPval.R bothWays.tsv bothWays-corrected.tsv
+    Rscript $CWD/functions/AdjPval.R bothWays.tsv bothWays-corrected.tsv
   
     sed 1d bothWays-corrected.tsv | while read -r msa1 msa2 colA realA colB realB corr boot p_value bonferroni holm bh hochberg hommel by fdr; do
     
