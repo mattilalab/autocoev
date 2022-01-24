@@ -3,7 +3,7 @@
 # Calculate background for each protein pair (Prot 1 -> Prot 2) after our filtering
 calc_back_final() {
 local PROTCHI="${1}"
-echo "$PROTCHI"
+echo -e "[CHI SQUARE] ${PROTCHI%.*.*}"
 
 cat $PROTCHI | while read -r Seq1 Seq2 numPairs totalComp ; do
   back_calc=$(printf "%1.10f" `echo "($numPairs)/($totalComp)" |bc -l`)

@@ -105,7 +105,7 @@ results_cleanup() {
   
   # "Forward" Protein A vs Protein B
   cp ${PROTEINONE%.*}.fa_${PROTEINTWO%.*}.fa.out ${PROTEINONE%.*}_${PROTEINTWO%.*}.clean
-  echo "Clean up ${PROTEINONE%.*}_${PROTEINTWO%.*}.out"
+  echo -e "[CLEANINGUP] ${PROTEINONE%.*}_${PROTEINTWO%.*}.out"
   sed -i -n '/Coevolving Pairs of amino acid sites/,/Overlapping groups of coevolving residues/p' ${PROTEINONE%.*}_${PROTEINTWO%.*}.clean
   sed -i '1,5d' ${PROTEINONE%.*}_${PROTEINTWO%.*}.clean
   sed -i 's/Overlapping groups of coevolving residues//' ${PROTEINONE%.*}_${PROTEINTWO%.*}.clean
@@ -121,7 +121,7 @@ results_cleanup() {
   
   # "Reverse" Protein B vs Protein A
   cp ${PROTEINTWO%.*}.fa_${PROTEINONE%.*}.fa.out ${PROTEINTWO%.*}_${PROTEINONE%.*}.clean
-  echo "Clean up ${PROTEINTWO%.*}_${PROTEINONE%.*}.out"
+  echo "[CLEANINGUP] ${PROTEINTWO%.*}_${PROTEINONE%.*}.out"
   sed -i -n '/Coevolving Pairs of amino acid sites/,/Overlapping groups of coevolving residues/p' ${PROTEINTWO%.*}_${PROTEINONE%.*}.clean
   sed -i '1,5d' ${PROTEINTWO%.*}_${PROTEINONE%.*}.clean
   sed -i 's/Overlapping groups of coevolving residues//' ${PROTEINTWO%.*}_${PROTEINONE%.*}.clean
@@ -374,7 +374,7 @@ protein_pairs_stats() {
       
     # Collect data in a single file, which can be imported in Cytoscape
     echo "$msa_1 $msa_2 $coevThr $averR $averSigR $totCompar $sitesCountA $sitesCountB $gblocksMIN $gblocksMAX $gblocksMEAN $GapsMIN $GapsMAX $GapsMEAN $DivsMIN $DivsMAX $DivsMEAN $cCoevMIN $cCoevMAX $cCoevMEAN $bootMIN $bootMAX $bootMEAN $pMeanMIN $pMeanMAX $pMeanMEAN $BonferroniMIN $BonferroniMAX $BonferroniMEAN $chiboth_fin" >> $EOUT
-    echo "${msa_1} ${msa_2} added"
+    echo -e "[COEVOL ADD] ${msa_1} ${msa_2}"
     
     cd ..
 
