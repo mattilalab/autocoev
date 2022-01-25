@@ -393,7 +393,7 @@ summary_cleanup(){
       sed -i "s/$idxml/$namexml $idxml/g" $TMP/$RESULTS/allResidues.tsv
       sed -i "s/$idxml/$namexml $idxml/g" $EOUT
     done
-    sed -i "1i NameA msaA msaB NameB colA realA colB realB seqA seqB GblAB GapsAB DivsAB corrT corr normC boot p_value bonferroni holm bh hochberg hommel by fdr" $TMP/$RESULTS/allResidues.tsv
+    sed -i "1i NameA msaA NameB msaB colA realA colB realB seqA seqB GblAB GapsAB DivsAB corrT corr normC boot p_value bonferroni holm bh hochberg hommel by fdr" $TMP/$RESULTS/allResidues.tsv
     sed -i \
     "1i NameA msaA NameB msaB coevThr averR averSigR totCompar sitesCountA sitesCountB gblocksMIN gblocksMAX gblocksMEAN GapsMIN GapsMAX GapsMEAN DivsMIN DivsMAX DivsMEAN cCoevMIN cCoevMAX cCoevMEAN bootMIN bootMAX bootMEAN p_valueMIN p_valueMAX p_valueMEAN BonferroniMIN BonferroniMAX BonferroniMEAN chiboth_fin" \
     $EOUT
