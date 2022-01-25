@@ -370,13 +370,38 @@ protein_pairs_stats() {
     BonferroniMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $19}' | datamash max 1)
     BonferroniMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $19}' | datamash mean 1)
 
+    # Holm corrected p-values, same as above       
+    HolmMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $20}' | datamash min 1)
+    HolmMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $20}' | datamash max 1)
+    HolmMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $20}' | datamash mean 1)
+    
+    # Benjamini & Hochberg adjusted p-value (a.k.a FDR), same as above       
+    bhMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $21}' | datamash min 1)
+    bhMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $21}' | datamash max 1)
+    bhMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $21}' | datamash mean 1)
+    
+    # Hochberg adjusted p-value, same as above       
+    HochbergMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $22}' | datamash min 1)
+    HochbergMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $22}' | datamash max 1)
+    HochbergMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $22}' | datamash mean 1)
+    
+    # Hommel adjusted p-value, same as above       
+    HommelMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $23}' | datamash min 1)
+    HommelMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $23}' | datamash max 1)
+    HommelMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $23}' | datamash mean 1)
+    
+    # Benjamini & Yekutieli adjusted p-value, same as above       
+    byMIN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $24}' | datamash min 1)
+    byMAX=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $24}' | datamash max 1)
+    byMEAN=$(sed 1d bothWays-corrected-columns.tsv | awk '{print $24}' | datamash mean 1)
+
     # Add score after Chi squared based on filtered results
     forward_fin=$(grep "${msa_1} ${msa_2}" $TMP/$RESULTS/chi/chi_test_final/${msa_1}.fa.tsv | awk '{print $7}')
     reverse_fin=$(grep "${msa_2} ${msa_1}" $TMP/$RESULTS/chi/chi_test_final/${msa_2}.fa.tsv | awk '{print $7}')
     chiboth_fin=$(echo "$forward_fin + $reverse_fin" |bc -l)
       
     # Collect data in a single file, which can be imported in Cytoscape
-    echo "$msa_1 $msa_2 $coevThr $averR $averSigR $totCompar $sitesCountA $sitesCountB $gblocksMIN $gblocksMAX $gblocksMEAN $GapsMIN $GapsMAX $GapsMEAN $DivsMIN $DivsMAX $DivsMEAN $cCoevMIN $cCoevMAX $cCoevMEAN $bootMIN $bootMAX $bootMEAN $pMeanMIN $pMeanMAX $pMeanMEAN $BonferroniMIN $BonferroniMAX $BonferroniMEAN $chiboth_fin" >> $EOUT
+    echo "$msa_1 $msa_2 $coevThr $averR $averSigR $totCompar $sitesCountA $sitesCountB $gblocksMIN $gblocksMAX $gblocksMEAN $GapsMIN $GapsMAX $GapsMEAN $DivsMIN $DivsMAX $DivsMEAN $cCoevMIN $cCoevMAX $cCoevMEAN $bootMIN $bootMAX $bootMEAN $pMeanMIN $pMeanMAX $pMeanMEAN $BonferroniMIN $BonferroniMAX $BonferroniMEAN $HolmMIN $HolmMAX $HolmMEAN $bhMIN $bhMAX $bhMEAN $HochbergMIN $HochbergMAX $HochbergMEAN $HommelMIN $HommelMAX $HommelMEAN $byMIN $byMAX $byMEAN $chiboth_fin" >> $EOUT
     echo -e "[COEVOL ADD] ${msa_1} ${msa_2}"
     
     cd ..
@@ -398,7 +423,7 @@ summary_cleanup(){
     done
     sed -i "1i NameA idA NameB idB colA realA colB realB seqA seqB GblAB GapsAB DivsAB corrT corr normC boot p_value bonferroni holm bh hochberg hommel by fdr" $TMP/$RESULTS/allResidues.tsv
     sed -i \
-    "1i NameA idA NameB idB coevThr averR averSigR totCompar sitesCountA sitesCountB gblocksMIN gblocksMAX gblocksMEAN GapsMIN GapsMAX GapsMEAN DivsMIN DivsMAX DivsMEAN cCoevMIN cCoevMAX cCoevMEAN bootMIN bootMAX bootMEAN p_valueMIN p_valueMAX p_valueMEAN BonferroniMIN BonferroniMAX BonferroniMEAN chiboth_fin" \
+    "1i NameA idA NameB idB coevThr averR averSigR totCompar sitesCountA sitesCountB gblocksMIN gblocksMAX gblocksMEAN GapsMIN GapsMAX GapsMEAN DivsMIN DivsMAX DivsMEAN cCoevMIN cCoevMAX cCoevMEAN bootMIN bootMAX bootMEAN p_valueMIN p_valueMAX p_valueMEAN BonferroniMIN BonferroniMAX BonferroniMEAN HolmMIN HolmMAX HolmMEAN bhMIN bhMAX bhMEAN HochbergMIN HochbergMAX HochbergMEAN HommelMIN HommelMAX HommelMEAN byMIN byMAX byMEAN chiboth_fin" \
     $EOUT
   else
     echo "No Protein pairs!"
