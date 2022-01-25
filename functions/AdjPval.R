@@ -13,7 +13,7 @@ AdjustedPval<-function(filePath){
   sortedData$Hochberg =p.adjust(sortedData$p_value,method = "hochberg")
   sortedData$Hommel =p.adjust(sortedData$p_value,method = "hommel")
   sortedData$BY =p.adjust(sortedData$p_value,method = "BY")
-  sortedData$fdr =p.adjust(sortedData$p_value,method = "fdr")
+  #sortedData$fdr =p.adjust(sortedData$p_value,method = "fdr")
 
   write.table(sortedData,saveFile,row.names = F,sep="\t",quote = F) # Save to new file, by adding new columns of Adj. P-values
 }
