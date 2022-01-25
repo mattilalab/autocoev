@@ -1,7 +1,7 @@
 NameA	Name of Protein A
-msaA	UniProt ID of Protein A
+idA	UniProt ID of Protein A
 NameB	Name of Protein B
-msaB	UniProt ID of Protein B
+idB	UniProt ID of Protein B
 colA	Position of co-evolving residue in the MSA of Protein A
 realA	Position of co-evolving residue in Protein A (reference organism, unaligned)
 colB	Position of co-evolving residue in the MSA of Protein B
