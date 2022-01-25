@@ -22,3 +22,6 @@ bh	Benjamini & Hochberg adjusted p-value (a.k.a FDR)
 hochberg	Hochberg adjusted p-value
 hommel	Hommel adjusted p-value
 by	Benjamini & Yekutieli adjusted p-value
+
+Note: for more infor about adj. p, visit:
+https://stat.ethz.ch/R-manual/R-devel/library/stats/html/p.adjust.html

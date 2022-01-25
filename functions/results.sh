@@ -223,7 +223,7 @@ extract_columns_stats(){
     echo -e "[MULTI HYPO] $coevPair"
     Rscript $CWD/functions/AdjPval.R bothWays.tsv bothWays-corrected.tsv
   
-    sed 1d bothWays-corrected.tsv | while read -r msa1 msa2 colA realA colB realB corr boot p_value bonferroni holm bh hochberg hommel by fdr; do
+    sed 1d bothWays-corrected.tsv | while read -r msa1 msa2 colA realA colB realB corr boot p_value bonferroni holm bh hochberg hommel by; do
     
       # make sure the amino acid position exists in the reference organism
       if (( $(echo "$realA > 0" |bc -l) && $(echo "$realB > 0" |bc -l) )); then
@@ -292,7 +292,7 @@ extract_columns_stats(){
         echo -e "[NOT IN REF] $coevPair/$colA-$colB not in $ORGANISM!"
       fi
       echo "$msa1 $msa2 $colA $realA $colB $realB $seq1 $seq2 $gblscore1 $gblscore2 $gblscore $GapsAB $DivsAB $corrT $corr $normC $boot $p_value $bonferroni $holm $bh $hochberg $hommel $by $fdr" >> bothWays-corrected-columns.tsv
-      echo "$msa1 $msa2 $colA $realA $colB $realB $seq1 $seq2 $gblscore $GapsAB $DivsAB $corrT $corr $normC $boot $p_value $bonferroni $holm $bh $hochberg $hommel $by $fdr" >> $TMP/$RESULTS/allResidues.tsv
+      echo "$msa1 $msa2 $colA $realA $colB $realB $seq1 $seq2 $gblscore $GapsAB $DivsAB $corrT $corr $normC $boot $p_value $bonferroni $holm $bh $hochberg $hommel $by" >> $TMP/$RESULTS/allResidues.tsv
     done
     sed -i "1i msaA msaB colA realA colB realB seqA seqB gblAB GapsAB DivsAB corrT corr normC boot p_value bonferroni holm bh hochberg hommel by fdr" bothWays-corrected-columns.tsv
   elif [ ! -d "$coevPair" ]; then
