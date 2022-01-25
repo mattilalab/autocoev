@@ -10,7 +10,12 @@ cp -a lib/ caps2.0_src
 cp Makefile.static caps2.0_src
 cd caps2.0_src
 patch -p1 -i ../caps_verbose.patch
+patch -p1 -i ../02_caps_sort_input.patch
 make -f Makefile.static
+
+# The source is additionally patched to always sort the input MSAs, so
+# their order is always the same.
+cp vCAPS-static /usr/local/bin/vCAPS-static-sort
 
 Compiler flags used: "-O2 -fPIC -march=x86-64", in our experience -O3
 did not yield any significant performance improvement. Static libraries

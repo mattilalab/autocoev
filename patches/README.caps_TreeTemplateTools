@@ -1,0 +1,14 @@
+# caps_TreeTemplateTools.patch
+patch for bpp-phyl v1.9.0 to work with CAPS2
+http://biopp.univ-montp2.fr/repos/sources/bpp-phyl-1.9.0.tar.gz
+
+When phylogenetic trees are not supplied by the user, CAPS generates its
+own trees automatically:
+
+tree1 = create_input_tree(vec1.names, vec1.sequences);
+tree2 = create_input_tree(vec2.names, vec2.sequences);
+
+Our patch simply outputs the trees by treeToParenthesis:
+
+string temptre1 = TreeTemplateTools::treeToParenthesis(*tree1, true);
+string temptre2 = TreeTemplateTools::treeToParenthesis(*tree2, true);

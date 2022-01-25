@@ -1,0 +1,11 @@
+# caps_sort_input.patch
+With this patch, we introduce a small function to sort strings, as:
+
+bool compareFunction (std::string a, std::string b) {return a<b;} 
+
+The function is later called upon loading the input files:
+
+vector<string> files;
+files = Folder_to_vector(mystring.c_str());
+// make sure filenames are sorted!
+std::sort(files.begin(),files.end(),compareFunction);

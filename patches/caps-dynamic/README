@@ -1,5 +1,5 @@
 # Instructions to build patched CAPS2 on Debian/Ubuntu, tested on
-# Ubunto 20.04. Sources are provided in the current folder, but can be
+# Ubuntu 20.04. Sources are provided in the current folder, but can be
 # obtained from here:
 wget http://biopp.univ-montp2.fr/repos/sources/bpp-utils-1.5.0.tar.gz
 wget http://biopp.univ-montp2.fr/repos/sources/bpp-numcalc-1.8.0.tar.gz
@@ -69,6 +69,7 @@ sudo make install
 sudo apt install libgsl-dev
 cd caps2.0_src
 cp Makefile.debian .
-patch ../../caps_verbose.patch
+patch -p1 -i ../caps_verbose.patch
+patch -p1 -i ../02_caps_sort_input.patch
 make -f Makefile.debian
 sudo cp vCAPS /usr/local/bin
