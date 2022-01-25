@@ -1,7 +1,7 @@
 NameA	Name of Protein A
-msaA	UniProt ID of Protein A
+idA	UniProt ID of Protein A
 NameB	Name of Protein B
-msaB	UniProt ID of Protein B
+idB	UniProt ID of Protein B
 coevThr	Correlation (coevolution) threshold
 averR	Average correlation between
 averSigR	Average significant correlation
