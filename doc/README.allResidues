@@ -1,29 +1,24 @@
-Name1:		Protein 1 name
-msa1:		Protein 1 UniProt ID
-Name2:		Protein 2 name
-msa2:		Protein 2 Uniprot ID
-colA:		Position of residue "A" from Protein 1 in the MSA
-realA:		Position of residue "A" from Protein 1 in the non-aligned sequence of the reference organism
-colB:		Position of residue "B" from Protein 2 in the MSA
-realB:		Position of residue "B" from Protein 3 in the non-aligned sequence of the reference organism
-seq1:		Position and amino-acid of residue "A" from Protein 1 in the non-aligned, non-filtered by gblocks sequence of the reference organism
-seq2:		Position and amino-acid of residue "A" from Protein 1 in the non-aligned, non-filtered by gblocks sequence of the reference organism
-meanA:		meanA
-meanB:		meanB
-corr:		Co-evolutionary correlation (non corrected)
-boot:		Bootstrap value of the correlation
-corrT:		Correlation threshold for each pair of proteins
-cCoev:		Co-evolutionary correlation (corrected, normalized to threshold)
-pvalA:		Correlation p-value for A->B (non-corrected)
-pvalB:		Correlation p-value for B->A (non-corrected)
-pMean:		Mean (pvalA + pvalB)/2 correlation p-value (non-corrected)
-pDiff:		Difference between pvalA-pvalB (absolute value)
-corr1:		Correlation for A->B (non-corrected)
-corr2:		Correlation for B->A (non-corrected)
-bonferroni:	Bonferroni corrected pMean
-GapA:		MSA column gaps (-) for residue "A"
-GapB:		MSA column gaps (-) for residue "B"
-GapAB:		Mean value of GapA and GapB
-DivA:		Diversity within MSA column for residue "A"
-DivB:		Diversity within MSA column for residue "B"
-DivAB:		Mean value of DivA and DivB
+NameA	Name of Protein A
+msaA	UniProt ID of Protein A
+NameB	Name of Protein B
+msaB	UniProt ID of Protein B
+colA	Position of co-evolving residue in the MSA of Protein A
+realA	Position of co-evolving residue in Protein A (reference organism, unaligned)
+colB	Position of co-evolving residue in the MSA of Protein B
+realB	Position of co-evolving residue in Protein B (reference organism, unaligned)
+seqA	Amino acid residue at position (Protein A, unaligned)
+seqB	Amino acid residue at position (Protein B, unaligned)
+GblAB	Gblocks score of the MSA columns, mean for colA + colB
+GapsAB	Gaps score of the MSA columns, mean for colA + colB
+DivsAB	Diversity score of the MSA columns, mean for colA + colB
+corrT	Correlation threshold (mean for both "directions" of the CAPS run)
+corr	Correlation (mean for both "directions" of the CAPS run)
+normC	Correlation, normalized to threshold (mean for both "directions" of the CAPS run)
+boot	CAPS2 bootstrap value (mean for both "directions" of the CAPS run)
+p_value	P-value (mean for both "directions" of the CAPS run)
+bonferroni	Binferroni corrected p-value
+holm	Holm adjusted p-value
+bh	Benjamini & Hochberg adjusted p-value (a.k.a FDR)
+hochberg	Hochberg adjusted p-value
+hommel	Hommel adjusted p-value
+by	Benjamini & Yekutieli adjusted p-value
