@@ -192,7 +192,7 @@ results_cleanup() {
   # Check if we have co-evolving pairs detected bidirectionally
   if [ -f bothWays.tsv ]; then
     echo "[RWD-REV EQ] $coevPair"
-    sed -i "1i msa1 msa2 colA realA colB realB corr boot p_value" bothWays.tsv
+    sed -i "1i idA idB colA realA colB realB corr boot p_value" bothWays.tsv
   
     ### Chi^2 ### How many pairs do we have left? This is how CAPS2
     # counts pairs. Also get the totalcomp and export it.
@@ -294,7 +294,7 @@ extract_columns_stats(){
       echo "$msa1 $msa2 $colA $realA $colB $realB $seq1 $seq2 $gblscore1 $gblscore2 $gblscore $GapsAB $DivsAB $corrT $corr $normC $boot $p_value $bonferroni $holm $bh $hochberg $hommel $by $fdr" >> bothWays-corrected-columns.tsv
       echo "$msa1 $msa2 $colA $realA $colB $realB $seq1 $seq2 $gblscore $GapsAB $DivsAB $corrT $corr $normC $boot $p_value $bonferroni $holm $bh $hochberg $hommel $by" >> $TMP/$RESULTS/allResidues.tsv
     done
-    sed -i "1i msaA msaB colA realA colB realB seqA seqB gblAB GapsAB DivsAB corrT corr normC boot p_value bonferroni holm bh hochberg hommel by fdr" bothWays-corrected-columns.tsv
+    sed -i "1i idA idB colA realA colB realB seqA seqB gblAB GapsAB DivsAB corrT corr normC boot p_value bonferroni holm bh hochberg hommel by fdr" bothWays-corrected-columns.tsv
   elif [ ! -d "$coevPair" ]; then
     echo "No protein pairs"
   else
@@ -396,9 +396,9 @@ summary_cleanup(){
       sed -i "s/$idxml/$namexml $idxml/g" $TMP/$RESULTS/allResidues.tsv
       sed -i "s/$idxml/$namexml $idxml/g" $EOUT
     done
-    sed -i "1i NameA msaA NameB msaB colA realA colB realB seqA seqB GblAB GapsAB DivsAB corrT corr normC boot p_value bonferroni holm bh hochberg hommel by fdr" $TMP/$RESULTS/allResidues.tsv
+    sed -i "1i NameA idA NameB idB colA realA colB realB seqA seqB GblAB GapsAB DivsAB corrT corr normC boot p_value bonferroni holm bh hochberg hommel by fdr" $TMP/$RESULTS/allResidues.tsv
     sed -i \
-    "1i NameA msaA NameB msaB coevThr averR averSigR totCompar sitesCountA sitesCountB gblocksMIN gblocksMAX gblocksMEAN GapsMIN GapsMAX GapsMEAN DivsMIN DivsMAX DivsMEAN cCoevMIN cCoevMAX cCoevMEAN bootMIN bootMAX bootMEAN p_valueMIN p_valueMAX p_valueMEAN BonferroniMIN BonferroniMAX BonferroniMEAN chiboth_fin" \
+    "1i NameA idA NameB idB coevThr averR averSigR totCompar sitesCountA sitesCountB gblocksMIN gblocksMAX gblocksMEAN GapsMIN GapsMAX GapsMEAN DivsMIN DivsMAX DivsMEAN cCoevMIN cCoevMAX cCoevMEAN bootMIN bootMAX bootMEAN p_valueMIN p_valueMAX p_valueMEAN BonferroniMIN BonferroniMAX BonferroniMEAN chiboth_fin" \
     $EOUT
   else
     echo "No Protein pairs!"
