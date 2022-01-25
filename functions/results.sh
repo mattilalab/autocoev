@@ -141,6 +141,7 @@ results_cleanup() {
     
       # Do decimal values for fwd. This is from the while read loop
        fcorrdec=$(printf "%1.10f" $corr)
+       fbootdec=$(printf "%1.10f" $boot)
       fcorr1dec=$(printf "%1.10f" $corr1)
       fcorr2dec=$(printf "%1.10f" $corr2)
       #fpvalAdec=$(printf "%1.10f" $pvalA)
@@ -149,6 +150,7 @@ results_cleanup() {
     
       # Define rev. This comes from the grep step
        rcorrdec=$(printf "%1.10f" `echo $rowmatch | awk '{print $9}'`)
+       rbootdec=$(printf "%1.10f" `echo $rowmatch | awk '{print $10}'`)
       rcorr1dec=$(printf "%1.10f" `echo $rowmatch | awk '{print $14}'`)
       rcorr2dec=$(printf "%1.10f" `echo $rowmatch | awk '{print $15}'`)
       #rpvalAdec=$(printf "%1.10f" `echo $rowmatch | awk '{print $11}'`)
@@ -163,7 +165,8 @@ results_cleanup() {
           # Save the two correlation s (FWD and REV) mean value. The correlation is, in turn,
 	  # estimated in two directions for each FWD and REV (e.g. $fcorr1dec & $fcorr2dec),
 	  # but we do not want to output a crazy amount of stuff, do we? Same goes for the
-	  # p-values (e.g. fpvalAdec & fpvalBdec).	  
+	  # p-values (e.g. fpvalAdec & fpvalBdec).
+	  bootdec=$(printf "${fbootdec}\n ${rbootdec}" | datamash mean 1)	  
 	  corrdec=$(printf "${fcorrdec}\n ${rcorrdec}" | datamash mean 1)
           #corr1dec=$(printf "${fcorr1dec}\n $rcorr1dec" | datamash mean 1)
           #corr2dec=$(printf "${fcorr2dec}\n $rcorr2dec" | datamash mean 1)
@@ -171,7 +174,7 @@ results_cleanup() {
           #pvalBdec=$(printf "${fpvalBdec}\n $rpvalBdec" | datamash mean 1)
           pMeandec=$(printf "${fpMeandec}\n ${rpMeandec}" | datamash mean 1)
       
-        echo "$msa1 $msa2 $colA $realA $colB $realB $corrdec $boot $pMeandec" >> bothWays.tsv
+        echo "$msa1 $msa2 $colA $realA $colB $realB $corrdec $bootdec $pMeandec" >> bothWays.tsv
         echo -e "[COEV RESID] $coevPair"
 	
        elif (( $(echo "$fpMeandec >= $PVALUE" |bc -l) || $(echo "$rpMeandec >= $PVALUE" |bc -l) || \
