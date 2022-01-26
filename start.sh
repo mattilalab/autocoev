@@ -377,7 +377,7 @@ echo -e "\nDone with 10"
 ;;
 
 "[RUN] CAPS run (alpha: $ALPHA, $MSAMETHOD, $TREESCAPS)")
-split_dirs
+#split_dirs
 caps_set
 for folder in $TMP/$CAPSM/* ; do
   cd $folder
