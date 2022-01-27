@@ -134,14 +134,20 @@ pair_tree() {
 split_dirs(){
   cd $TMP/$PAIRM
   PNUM=$(ls -1 | wc -l) # Count the number of folders
-  FIRST=0
+  
+  # Do not set this to 0 (zero), as in my experience this makes one
+  # duplicate folder upon the first increment. A useful command to
+  # check for duplicate folders is (https://www.unix.com/302980418-post6.html):
+  # find * -type d | awk -F/ '{D[$NF]++} END {for (d in D) if (D[d]==2) print D[d] ": " d}'
+  # Do not uncomment this! I may add it to the script later.
+  FIRST=1
 
   until [ $FIRST -gt $PNUM ] ; do
     echo "Making $CAPSM/$FIRST"
     mkdir -p $TMP/$CAPSM/$FIRST
-    COPY=$(ls | tail -n +${FIRST} | head -$INCR | xargs)
+    COPY=$(ls | sort | tail -n +${FIRST} | head -${INCR} | xargs)
     cp -a $COPY $TMP/$CAPSM/$FIRST/
-    (( FIRST=FIRST+$INCR ))
+    (( FIRST=FIRST+${INCR} ))
   done
 
   cd $TMP

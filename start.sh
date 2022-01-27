@@ -175,8 +175,7 @@ cd $TMP
 echo -e "Select a step:"
 PS3="Your choice: "
 SEQOPT=( "Pair UniProt <-> OrthoDB <-> OGuniqueID"
-         "Prepare orthologues list (level: $LEVEL)"
-         "Get FASTA sequences of all orthologues"
+         "Get orthologues (level: $LEVEL)"
          "Download sequences from UniProt (organism: $ORGANISM)"
          "BLAST orthologues against UniProt sequence ($ORGANISM, detailed: $DETBLAST)"
          "Get FASTA sequences of the best hits (identity: $PIDENT; gaps: $PGAPS)"
@@ -225,11 +224,11 @@ case $opt in
 echo -e "\nDone with 1)"
 ;;
 
-"Prepare orthologues list (level: $LEVEL)")
-  
+"Get orthologues (level: $LEVEL)")
+if [ -d "$TMP/$ORTHO" ]; then
   PROTLST=$(ls $CWD/$PROTEIN/)
-  
   cd $TMP/$ORTHO/
+
   for prlst in ${PROTLST[@]} ; do
     UNIPROTID=$( awk '{print $1}' $CWD/$PROTEIN/$prlst | datamash transpose )
     sed "/$ORGANISM/d" $CWD/$SPECIES | \
@@ -240,29 +239,30 @@ echo -e "\nDone with 1)"
    
   echo -e "Checking for proteins with no homologues..."
   parallel $CORESCAPS no_homologues_check ::: $UNIPROTID
-   
-echo -e "\nDone with 2)"
-;;
-
-"Get FASTA sequences of all orthologues")
-
-  PROTLST=$(ls $CWD/$PROTEIN/)
-  cd $TMP/$ORTHO/
+  
   for prlst in ${PROTLST[@]} ; do
     UNIPROTID=$( awk '{print $1}' $CWD/$PROTEIN/$prlst | datamash transpose )
     parallel $CORESCAPS get_ortho_fasta ::: $UNIPROTID
   done
-echo -e "\nDone with 3)"
+else
+  echo "NOT FOUND: $TMP/$ORTHO"
+fi  
+echo -e "\nDone with 2)"
 ;;
 
 "Download sequences from UniProt (organism: $ORGANISM)")
+if [ -d "$TMP/$ORTHO" ]; then
   cd $TMP/$ORTHO/
   uniprot_download
   cd -
-echo -e "\nDone with 4)"
+else
+ echo "NOT FOUND: $TMP/$ORTHO"
+fi
+echo -e "\nDone with 3)"
 ;;
 
 "BLAST orthologues against UniProt sequence ($ORGANISM, detailed: $DETBLAST)")
+if [ -d "$TMP/$ORTHO" ]; then
   PROTLST=$(ls $CWD/$PROTEIN/)
   cd $TMP/$ORTHO/
   for prlst in ${PROTLST[@]} ; do
@@ -270,10 +270,14 @@ echo -e "\nDone with 4)"
     parallel $CORESCAPS blast_db_prep ::: $UNIPROTID
     parallel $CORESCAPS reciprocal_blast ::: $UNIPROTID
   done
-echo -e "\nDone with 5)"
+else
+ echo "NOT FOUND: $TMP/$ORTHO"
+fi
+echo -e "\nDone with 4)"
 ;;
 
 "Get FASTA sequences of the best hits (identity: $PIDENT; gaps: $PGAPS)")
+if [ -d "$TMP/$ORTHO" ]; then
   PROTLST=$(ls $CWD/$PROTEIN/)
   cd $TMP/$ORTHO/
   mkdir -p $TMP/$GETFA
@@ -284,12 +288,15 @@ echo -e "\nDone with 5)"
   done
 
   clarify_blast
-
-  echo -e "\nDone with 6)"
+else
+ echo "NOT FOUND: $TMP/$ORTHO"
+fi
+echo -e "\nDone with 5)"
 ;;
 
 "[MSA] Exclude too divergent sequences")
-PROTLST=$(ls $CWD/$PROTEIN/)
+if [ -d "$TMP/$GETFA" ]; then
+  PROTLST=$(ls $CWD/$PROTEIN/)
   cd $TMP/$GETFA
   rm -rf $TMP/tsv/excluded-$GUIDANCEMSA-$GUIDANCECUT.tsv
   rm -rf $TMP/$GUIDANCE/$GUIDANCEMSA-$GUIDANCECUT
@@ -300,11 +307,14 @@ PROTLST=$(ls $CWD/$PROTEIN/)
     UNIPROTID=$( awk '{print $1}' $CWD/$PROTEIN/$prlst | datamash transpose )
     parallel $CORESCAPS run_guidance ::: $UNIPROTID
   done
-echo -e "\nDone with 7)"
-
+else
+ echo "NOT FOUND: $TMP/$GETFA"
+fi
+echo -e "\nDone with 6)"
 ;;
 
 "[MSA] Create MSA with selected method ($MSAMETHOD)")
+if [ -d "$TMP/$GUIDEDFA/$GUIDANCEMSA-$GUIDANCECUT" ]; then
   PROTLST=$(ls $CWD/$PROTEIN/)
   cd $TMP/$GUIDEDFA/$GUIDANCEMSA-$GUIDANCECUT
   mkdir -p $TMP/$MSA/${GUIDANCEMSA}-${GUIDANCECUT}-${MSAMETHOD}/
@@ -326,147 +336,171 @@ echo -e "\nDone with 7)"
   cd $TMP/$MSA/${GUIDANCEMSA}-${GUIDANCECUT}-${MSAMETHOD}/
   msa_process
   position_reference
-
-echo -e "\nDone with 8)"
+else
+  echo "NOT FOUND: $TMP/$GUIDEDFA/$GUIDANCEMSA-$GUIDANCECUT"
+fi
+echo -e "\nDone with 7)"
 ;;
 
 "[TRE] Prepare trees ($TREESCAPS, $MSAMETHOD, $PHYMLGUIDE, $TREESROOT)")
-
-if [ "$TREESCAPS" = "auto" ]; then
-  echo -e "CAPS will generate its own trees. Skipping..."
-elif [ "$TREESCAPS" = "phyml" ] && [ "$PHYMLGUIDE" = "exguide" ]; then
-  phyml_ext
-  phyml_guide
-  phyml_prep
+if [ -d "$TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD" ]; then
+  if [ "$TREESCAPS" = "auto" ]; then
+    echo -e "CAPS will generate its own trees. Skipping..."
+  elif [ "$TREESCAPS" = "phyml" ] && [ "$PHYMLGUIDE" = "exguide" ]; then
+    phyml_ext
+    phyml_guide
+    phyml_prep
   
-  PROTLST=$(ls $CWD/$PROTEIN/)
-  for prlst in ${PROTLST[@]} ; do
-    UNIPROTID=$( awk '{print $1}' $CWD/$PROTEIN/$prlst | datamash transpose )
-    parallel $CORESCAPS phymlfn ::: $UNIPROTID
-  done
+    PROTLST=$(ls $CWD/$PROTEIN/)
+    for prlst in ${PROTLST[@]} ; do
+      UNIPROTID=$( awk '{print $1}' $CWD/$PROTEIN/$prlst | datamash transpose )
+      parallel $CORESCAPS phymlfn ::: $UNIPROTID
+    done
 
-  phyml_process
+    phyml_process
   
-elif [ "$TREESCAPS" = "phyml" ] && [ "$PHYMLGUIDE" = "noguide" ]; then
-  phyml_prep
+  elif [ "$TREESCAPS" = "phyml" ] && [ "$PHYMLGUIDE" = "noguide" ]; then
+    phyml_prep
     
-  PROTLST=$(ls $CWD/$PROTEIN/)
-  for prlst in ${PROTLST[@]} ; do
-    UNIPROTID=$( awk '{print $1}' $CWD/$PROTEIN/$prlst | datamash transpose )
-    parallel $CORESCAPS phymlfn ::: $UNIPROTID
-  done
+    PROTLST=$(ls $CWD/$PROTEIN/)
+    for prlst in ${PROTLST[@]} ; do
+      UNIPROTID=$( awk '{print $1}' $CWD/$PROTEIN/$prlst | datamash transpose )
+      parallel $CORESCAPS phymlfn ::: $UNIPROTID
+    done
 
-  phyml_process
+    phyml_process
+  else
+    echo -e "Check your tree settings!"
+  fi
 else
-  echo -e "Check your tree settings!"
+  echo "NOT FOUND: $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD"
 fi
-echo -e "\nDone with 9)"
+echo -e "\nDone with 8)"
 ;;
 
 "[RUN] Create pairs ($PAIRINGMANNER)")
-if [ "$PAIRINGMANNER" = "all" ]; then
-  pair_msa
-  pair_tree
-elif [ "$PAIRINGMANNER" = "defined" ]; then
-  pair_defined_msa
-  pair_tree
+if [ -d "$TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD" ]; then
+  if [ "$PAIRINGMANNER" = "all" ]; then
+    pair_msa
+    pair_tree
+  elif [ "$PAIRINGMANNER" = "defined" ]; then
+    pair_defined_msa
+    pair_tree
+  else
+    echo -e "Check your pairing settings!"
+  fi
 else
-  echo -e "Check your pairing settings!"
+  echo "NOT FOUND: $TMP/$MSA/$GUIDANCEMSA-$GUIDANCECUT-$MSAMETHOD"
+fi
+echo -e "\nDone with 9"
+;;
+
+"[RUN] CAPS run (alpha: $ALPHA, $MSAMETHOD, $TREESCAPS)")
+if [ -d "$TMP/$PAIRM" ]; then
+ split_dirs
+ caps_set
+  cd $TMP/$CAPSM
+  for folder in * ; do
+    cd $folder
+    echo -e "Processing \e[92m${folder}\e[39m"
+    echo "$DATESTAMP ${folder}" >> $TMP/progress-$ALPHA-$MSAMETHOD-$TREESCAPS.txt
+    PAIRLIST=$(ls)
+    msa=msa
+    parallel $CORESCAPS --progress capsfn ::: "$PAIRLIST"
+    echo -e "Done in \e[92m${folder}\e[39m"
+    echo "" >> $TMP/progress-$ALPHA-$MSAMETHOD-$TREESCAPS.txt
+    cd ..
+  done
+else
+  echo "NOT FOUND: $TMP/$PAIRM"
 fi
 echo -e "\nDone with 10"
 ;;
 
-"[RUN] CAPS run (alpha: $ALPHA, $MSAMETHOD, $TREESCAPS)")
-#split_dirs
-caps_set
-for folder in $TMP/$CAPSM/* ; do
-  cd $folder
-  echo -e "Processing \e[92m${folder}\e[39m"
-  echo "$DATESTAMP ${folder}" >> $TMP/progress-$ALPHA-$MSAMETHOD-$TREESCAPS.txt
-  PAIRLIST=$(ls)
-  msa=msa
-  parallel $CORESCAPS --progress capsfn ::: "$PAIRLIST"
-  echo -e "Done in \e[92m${folder}\e[39m"
-  echo "" >> $TMP/progress-$ALPHA-$MSAMETHOD-$TREESCAPS.txt
-  cd ..
-done
+"[RUN] Inspect results and re-run CAPS (REV)")
+if [ -d "$TMP/$CAPSM" ]; then
+  mkdir -p $TMP/$RESULTS/{fail,nocoev,coev}
+  cd $TMP/$CAPSM/
+  for folder in * ; do
+    echo -e "Processing $folder"
+    cd $folder
+    PAIRLIST=$( ls ./ )
+    parallel $CORESCAPS caps_inspect ::: "$PAIRLIST"
+    cd ..
+  done
+  
+  # Prepare for REV CAPS run
+  caps_set_rev
+
+  cd $TMP/$RESULTS/coev
+  for folder in * ; do
+    cd $folder
+    echo -e "Processing \e[92m${folder}\e[39m"
+    echo "$DATESTAMP ${folder}" >> $TMP/progress-$ALPHA-$MSAMETHOD-$TREESCAPS.txt
+    PAIRLIST=$(ls)
+    msa=msa-rev
+    parallel $CORESCAPS --progress capsfn ::: "$PAIRLIST"
+    echo -e "Done in \e[92m${folder}\e[39m"
+    echo "" >> $TMP/progress-$ALPHA-$MSAMETHOD-$TREESCAPS.txt
+    cd ..
+  done
+else
+  echo "NOT FOUND: $TMP/$CAPSM"
+fi
+
 echo -e "\nDone with 11"
 ;;
 
-"[RUN] Inspect results and re-run CAPS (REV)")
-mkdir -p $TMP/$RESULTS/{fail,nocoev,coev,columns}
-cd $TMP/$CAPSM/
-for folder in * ; do
+"[RES] Generate columns stats")
+if [ -d "$TMP/$RESULTS/coev" ]; then
+  cd $TMP/$RESULTS/coev
+  for folder in * ; do
   echo -e "Processing $folder"
-  cd $folder
-  PAIRLIST=$( ls ./ )
-  parallel $CORESCAPS caps_inspect ::: "$PAIRLIST"
-  cd ..
-done
+    cd $folder
+    PAIRLIST=$( ls ./ )
+    parallel $CORESCAPS caps_reinspect ::: "$PAIRLIST"
+    cd ..
+  done
+  echo -e "\n\e[92mResults inspections done!\e[39m\n"
 
-caps_set_rev
+  cd $TMP/$RESULTS/coev/
+  for resfold in * ; do
+    echo -e "[PROCESSING] $resfold"
+    cd $resfold
+    SUBFOLD=$( ls ./ )
+    parallel $CORESCAPS results_cleanup ::: "$SUBFOLD"
+    cd ..
+  done
 
-for folder in $TMP/$RESULTS/coev/* ; do
-  cd $folder
-  echo -e "Processing \e[92m${folder}\e[39m"
-  echo "$DATESTAMP ${folder}" >> $TMP/progress-$ALPHA-$MSAMETHOD-$TREESCAPS.txt
-  PAIRLIST=$(ls)
-  msa=msa-rev
-  parallel $CORESCAPS --progress capsfn ::: "$PAIRLIST"
-  echo -e "Done in \e[92m${folder}\e[39m"
-  echo "" >> $TMP/progress-$ALPHA-$MSAMETHOD-$TREESCAPS.txt
-  cd ..
-done
+  for resfold in * ; do
+    echo -e "[PROCESSING] $resfold"
+    cd $resfold
+    SUBFOLD=$( ls ./ )
+    parallel $CORESCAPS extract_columns_stats ::: "$SUBFOLD"
+    cd ..
+  done
 
-for folder in $TMP/$RESULTS/coev/* ; do
-echo -e "Processing $folder"
-  cd $folder
-  PAIRLIST=$( ls ./ )
-  parallel $CORESCAPS caps_reinspect ::: "$PAIRLIST"
-  cd ..
-done
-echo -e "\n\e[92mResults inspections done!\e[39m\n"
+  mkdir -p $TMP/$RESULTS/chi/{back_calc_final,chi_test_final}
+  cd $TMP/$RESULTS/chi/proteins
+  protInt=$( ls ./ )
+  parallel $CORESCAPS calc_back_final ::: "$protInt"
 
-cd $TMP/$RESULTS/coev/
-for resfold in * ; do
-  echo -e "Processing $resfold"
-  cd $resfold
-  SUBFOLD=$( ls ./ )
-  parallel $CORESCAPS results_cleanup ::: "$SUBFOLD"
-  cd ..
-done
+  cd $TMP/$RESULTS/coev/
+  for resfold in * ; do
+    echo -e "[PROCESSING] $resfold"
+    cd $resfold
+    SUBFOLD=$( ls ./ )
+    parallel $CORESCAPS protein_pairs_stats ::: "$SUBFOLD"
+    cd ..
+  done
 
-for resfold in * ; do
-  echo -e "Processing $resfold"
-  cd $resfold
-  SUBFOLD=$( ls ./ )
-  parallel $CORESCAPS extract_columns_stats ::: "$SUBFOLD"
-  cd ..
-done
+  summary_cleanup
+
+else
+  echo "NOT FOUND: $TMP/$RESULTS/coev"
+fi
 
 echo -e "\nDone with 12"
-;;
-
-"[RES] Generate columns stats")
-## Chi tests
-
-mkdir -p $TMP/$RESULTS/chi/{back_calc_final,chi_test_final}
-cd $TMP/$RESULTS/chi/proteins
-protInt=$( ls ./ )
-parallel $CORESCAPS calc_back_final ::: "$protInt"
-
-cd $TMP/$RESULTS/coev/
-for resfold in * ; do
-  echo -e "Processing $resfold"
-  cd $resfold
-  SUBFOLD=$( ls ./ )
-  parallel $CORESCAPS protein_pairs_stats ::: "$SUBFOLD"
-  cd ..
-done
-
-summary_cleanup
-
-echo -e "\nDone with 13"
 ;;
 
 "[Exit script]")
