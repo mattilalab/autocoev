@@ -204,6 +204,10 @@ results_cleanup() {
       echo "${PROTEINTWO%.*}.fa ${PROTEINONE%.*}.fa $pairsNumber $totCompares" >> $TMP/$RESULTS/chi/proteins/${PROTEINTWO%.*}.fa.tsv
     elif [ ! -f bothWays.tsv ]; then
       echo -e "[FW-RE DIFF] $coevPair"
+      
+      ### Chi^2 ### Not FWD-REV match, so we have "0" pairs?
+      echo "${PROTEINONE%.*}.fa ${PROTEINTWO%.*}.fa 0 $totCompares" >> $TMP/$RESULTS/chi/proteins/${PROTEINONE%.*}.fa.tsv
+      echo "${PROTEINTWO%.*}.fa ${PROTEINONE%.*}.fa 0 $totCompares" >> $TMP/$RESULTS/chi/proteins/${PROTEINTWO%.*}.fa.tsv      
       mkdir -p $TMP/$RESULTS/noBothWays
       cd ..
       mv $coevPair $TMP/$RESULTS/noBothWays
