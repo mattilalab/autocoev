@@ -186,7 +186,7 @@ results_cleanup() {
        elif (( $(echo "$fpMeandec >= $PVALUE" |bc -l) || $(echo "$rpMeandec >= $PVALUE" |bc -l) || \
     	  $(echo "$fcorr1dec <= 0" |bc -l) || $(echo "$rcorr1dec <= 0" |bc -l) || \
 	  $(echo "$fcorr2dec <= 0" |bc -l) || $(echo "$rcorr2dec <= 0" |bc -l) ||
-	  $(echo "$realA == 0" |bc -l) && $(echo "$realB == 0" |bc -l) )); then
+	  $(echo "$realA == 0" |bc -l) || $(echo "$realB == 0" |bc -l) )); then
 	  echo -e "[SKIP RESID] $coevPair"
        else
          echo "Error 4: $resfold/$coevPair" >> $TMP/$RESULTS/errors.txt
