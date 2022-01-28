@@ -6,8 +6,8 @@ coevThr	Correlation (coevolution) threshold
 averR	Average correlation between
 averSigR	Average significant correlation
 totCompar	Total comparisons (MSA-A*MSA-B)
-sitesCountA	Co-evolving sites from Protein A
-sitesCountB	Co-evolving sites from Protein B
+sitesUnique	Number of independent co-evolving sites pairs
+sitesComp	Co-evolving sites over total comparisons
 gblocksMIN	Gblocks score minimum
 gblocksMAX	Gblocks score maximum
 gblocksMEAN	Gblocks score mean
