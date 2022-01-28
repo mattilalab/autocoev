@@ -10,7 +10,7 @@ DATESTAMP=$(date)
 CWD=$(pwd)
 
 NAME="AutoCoEv" # script name
-VER="0.2.5beta" # version
+VER="0.2.6beta" # version
 
 # Load settings first
 . $CWD/settings.conf

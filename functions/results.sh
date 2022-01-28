@@ -71,10 +71,10 @@ local pair="${1}"
   SUMMARY=$(sed -n '2p' $pair/coev_inter.csv)
   while read -r Seq1 Seq2 numPairs totalComp CutOff thresholdR averageR averageSigR tree1length tree2length gapThreshold bootCutOff DistanceCoef ; do
     if [ -z "${SUMMARY}" ]; then
-      echo -e "[\e[91mFAILED RUN\e[39m]: $pair"
+      echo -e "[\e[91mFAILED RUN\e[39m] $pair"
       mv $pair $TMP/$RESULTS/fail
     elif [ "$numPairs" -eq 0 ]; then
-      echo -e "[\e[34mNON COEVOL\e[39m]: $pair"
+      echo -e "[\e[34mNON COEVOL\e[39m] $pair"
       mkdir -p $TMP/$RESULTS/nocoev/$folder
       mv $pair $TMP/$RESULTS/nocoev/$folder
       
@@ -159,10 +159,13 @@ results_cleanup() {
       #rpvalBdec=$(printf "%1.10f" `echo $rowmatch | awk '{print $12}'`)
       rpMeandec=$(printf "%1.10f" `echo $rowmatch | awk '{print $13}'`)
   
-      # Make sure we use reliable values. And we do not need all this in the output (comment out for now)
+      # Make sure we use reliable values. Also, check already here that the amino acid is
+      # found in the reference organism (e.g. mouse). And we do not need all these in the
+      # output, comment out some of them for now.
       if (( $(echo "$fpMeandec < $PVALUE" |bc -l) && $(echo "$rpMeandec < $PVALUE" |bc -l) && \
     	    $(echo "$fcorr1dec > 0" |bc -l) && $(echo "$rcorr1dec > 0" |bc -l) && \
-	    $(echo "$fcorr2dec > 0" |bc -l) && $(echo "$rcorr2dec > 0" |bc -l) )); then
+	    $(echo "$fcorr2dec > 0" |bc -l) && $(echo "$rcorr2dec > 0" |bc -l) && \
+	    $(echo "$realA > 0" |bc -l) && $(echo "$realB > 0" |bc -l) )); then
 
           # Save the two correlation s (FWD and REV) mean value. The correlation is, in turn,
 	  # estimated in two directions for each FWD and REV (e.g. $fcorr1dec & $fcorr2dec),
@@ -178,10 +181,12 @@ results_cleanup() {
       
         echo "$msa1 $msa2 $colA $realA $colB $realB $corrdec $bootdec $pMeandec" >> bothWays.tsv
         echo -e "[COEV RESID] $coevPair"
-	
+      
+       # The other way around as above... discard these as unreliable.	
        elif (( $(echo "$fpMeandec >= $PVALUE" |bc -l) || $(echo "$rpMeandec >= $PVALUE" |bc -l) || \
     	  $(echo "$fcorr1dec <= 0" |bc -l) || $(echo "$rcorr1dec <= 0" |bc -l) || \
-	  $(echo "$fcorr2dec <= 0" |bc -l) || $(echo "$rcorr2dec <= 0" |bc -l) )); then
+	  $(echo "$fcorr2dec <= 0" |bc -l) || $(echo "$rcorr2dec <= 0" |bc -l) ||
+	  $(echo "$realA == 0" |bc -l) && $(echo "$realB == 0" |bc -l) )); then
 	  echo -e "[SKIP RESID] $coevPair"
        else
          echo "Error 4: $resfold/$coevPair" >> $TMP/$RESULTS/errors.txt
@@ -237,7 +242,7 @@ extract_columns_stats(){
   
     sed 1d bothWays-corrected.tsv | while read -r msa1 msa2 colA realA colB realB corr boot p_value bonferroni holm bh hochberg hommel by; do
     
-      # make sure the amino acid position exists in the reference organism
+      # make sure the amino acid position exists in the reference organism. Hmm, we already check this above
       if (( $(echo "$realA > 0" |bc -l) && $(echo "$realB > 0" |bc -l) )); then
       
         # get amino acid and Gblocks score
