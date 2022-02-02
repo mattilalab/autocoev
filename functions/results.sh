@@ -104,7 +104,7 @@ results_cleanup() {
     cd $coevPair
     PROTEINONE=$(ls *.species | sed -n '1p')
     PROTEINTWO=$(ls *.species | sed -n '2p')
-  
+
     # "Forward" Protein A vs Protein B
     cp ${PROTEINONE%.*}.fa_${PROTEINTWO%.*}.fa.out ${PROTEINONE%.*}_${PROTEINTWO%.*}.clean
     echo -e "[CLEANINGUP] ${PROTEINONE%.*}_${PROTEINTWO%.*}.out"
@@ -343,6 +343,15 @@ protein_pairs_stats() {
     ### Report total comparisons (MSA1*MSA2). They are the same FWD and REV.
     totCompar=$(sed -n '2p' ${msa_1}.fa_${msa_2}.fa-coev_inter.csv | awk '{print $4}')
 
+    ## Make a smarter way to score the protein pairs? ## TO DO...
+    ## Get MSAs lengths independently
+    #lengthA=$(grep "Length1:" ${msa_1}.fa_${msa_2}.fa-coev_inter.csv | awk '{print $2}')
+    #lengthB=$(grep "Length1:" ${msa_2}.fa_${msa_1}.fa-coev_inter.csv | awk '{print $2}')
+
+    ## Calculate sites over length
+    #sitesCompA=$(printf "%1.10f" `echo "${sitesCountA}/${lengthA}" |bc -l`)
+    #sitesCompB=$(printf "%1.10f" `echo "${sitesCountB}/${lengthB}" |bc -l`)
+
     ### Calculates sites over total comparisons ratio
     sitesComp=$(printf "%1.10f" `echo "${sitesUnique}/${totCompar}" |bc -l`)
 
@@ -425,7 +434,7 @@ protein_pairs_stats() {
     chiboth_fin=$(echo "$forward_fin + $reverse_fin" |bc -l)
       
     # Collect data in a single file, which can be imported in Cytoscape
-    echo "$msa_1 $msa_2 $coevThr $averR $averSigR $totCompar $sitesUnique $sitesComp $gblocksMIN $gblocksMAX $gblocksMEAN $GapsMIN $GapsMAX $GapsMEAN $DivsMIN $DivsMAX $DivsMEAN $cCoevMIN $cCoevMAX $cCoevMEAN $bootMIN $bootMAX $bootMEAN $pMeanMIN $pMeanMAX $pMeanMEAN $BonferroniMIN $BonferroniMAX $BonferroniMEAN $HolmMIN $HolmMAX $HolmMEAN $bhMIN $bhMAX $bhMEAN $HochbergMIN $HochbergMAX $HochbergMEAN $HommelMIN $HommelMAX $HommelMEAN $byMIN $byMAX $byMEAN $chiboth_fin" >> $EOUT
+    echo "$msa_1 $msa_2 $coevThr $averR $averSigR $totCompar $sitesCountA $sitesCountB $sitesUnique $sitesComp $gblocksMIN $gblocksMAX $gblocksMEAN $GapsMIN $GapsMAX $GapsMEAN $DivsMIN $DivsMAX $DivsMEAN $cCoevMIN $cCoevMAX $cCoevMEAN $bootMIN $bootMAX $bootMEAN $pMeanMIN $pMeanMAX $pMeanMEAN $BonferroniMIN $BonferroniMAX $BonferroniMEAN $HolmMIN $HolmMAX $HolmMEAN $bhMIN $bhMAX $bhMEAN $HochbergMIN $HochbergMAX $HochbergMEAN $HommelMIN $HommelMAX $HommelMEAN $byMIN $byMAX $byMEAN $chiboth_fin" >> $EOUT
     echo -e "[COEVOL ADD] ${msa_1} ${msa_2}"
     
     cd ..
@@ -447,7 +456,7 @@ summary_cleanup(){
     done
     sed -i "1i NameA idA NameB idB colA realA colB realB seqA seqB GblAB GapsAB DivsAB corrT corr normC boot p_value bonferroni holm bh hochberg hommel by" $TMP/$RESULTS/allResidues.tsv
     sed -i \
-    "1i NameA idA NameB idB coevThr averR averSigR totCompar sitesUnique sitesComp gblocksMIN gblocksMAX gblocksMEAN GapsMIN GapsMAX GapsMEAN DivsMIN DivsMAX DivsMEAN cCoevMIN cCoevMAX cCoevMEAN bootMIN bootMAX bootMEAN p_valueMIN p_valueMAX p_valueMEAN BonferroniMIN BonferroniMAX BonferroniMEAN HolmMIN HolmMAX HolmMEAN bhMIN bhMAX bhMEAN HochbergMIN HochbergMAX HochbergMEAN HommelMIN HommelMAX HommelMEAN byMIN byMAX byMEAN chiboth_fin" \
+    "1i NameA idA NameB idB coevThr averR averSigR totCompar sitesCountA sitesCountB sitesUnique sitesComp gblocksMIN gblocksMAX gblocksMEAN GapsMIN GapsMAX GapsMEAN DivsMIN DivsMAX DivsMEAN cCoevMIN cCoevMAX cCoevMEAN bootMIN bootMAX bootMEAN p_valueMIN p_valueMAX p_valueMEAN BonferroniMIN BonferroniMAX BonferroniMEAN HolmMIN HolmMAX HolmMEAN bhMIN bhMAX bhMEAN HochbergMIN HochbergMAX HochbergMEAN HommelMIN HommelMAX HommelMEAN byMIN byMAX byMEAN chiboth_fin" \
     $EOUT
   else
     echo "No Protein pairs!"
