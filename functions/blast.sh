@@ -26,7 +26,7 @@ reciprocal_blast() {
     cd $UniProt/FASTA/
     for blfas in * ; do
       mkdir -p ../BLAST/${blfas%.*}
-      blastp \
+      blastp -num_threads $BLASTCORES \
         -query $blfas \
         -db ../$ORGANISM/$UniProt.fa \
         -out ../BLAST/${blfas%.*}/${blfas%.*}.out \
@@ -36,7 +36,7 @@ reciprocal_blast() {
 
       # Shall we run BLAST again to generate detailed results?
       if [ "$DETBLAST" = "yes" ]; then
-        blastp \
+        blastp -num_threads $BLASTCORES \
           -query $blfas \
           -db ../$ORGANISM/$UniProt.fa \
           -out ../BLAST/${blfas%.*}/${blfas%.*}.default \
