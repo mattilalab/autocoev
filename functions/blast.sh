@@ -32,7 +32,7 @@ reciprocal_blast() {
         -out ../BLAST/${blfas%.*}/${blfas%.*}.out \
         -outfmt="6 qseqid sacc pident ppos length mismatch gapopen gaps qstart qend sstart send evalue bitscore"
       sort --key 14 --numeric-sort --reverse ../BLAST/${blfas%.*}/${blfas%.*}.out | head -n 1 >> ../blastBest.tsv
-      echo -e "BLAST ${blfas%.*} against $UniProt"
+      echo -e "BLAST ${blfas%.*} against $UniProt short."
 
       # Shall we run BLAST again to generate detailed results?
       if [ "$DETBLAST" = "yes" ]; then
@@ -41,9 +41,9 @@ reciprocal_blast() {
           -db ../$ORGANISM/$UniProt.fa \
           -out ../BLAST/${blfas%.*}/${blfas%.*}.default \
           -outfmt="0"
-       echo -e "detailed..."
+         echo -e "BLAST ${blfas%.*} against $UniProt detailed."
        elif [ "$DETBLAST" = "no" ]; then
-         return 1
+         echo -e "BLAST ${blfas%.*} against $UniProt no details."
       else
         "Check your BLAST settings!"
       fi
