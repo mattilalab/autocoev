@@ -302,7 +302,7 @@ extract_columns_stats(){
       normC=$(printf "%1.10f" `echo "($corr - $corrT)/(1 - $corrT)" |bc -l`)
 
       echo "$msa1 $msa2 $colA $realA $colB $realB $seq1 $seq2 $gblscore1 $gblscore2 $gblscore $GapsAB $DivsAB $corrT $corr $normC $boot $p_value $bonferroni $holm $bh $hochberg $hommel $by" >> bothWays-corrected-columns.tsv
-      echo "$msa1 $msa2 $colA $realA $colB $realB $seq1 $seq2 $gblscore $GapsAB $DivsAB $corrT $corr $normC $boot $p_value $bonferroni $holm $bh $hochberg $hommel $by" >> $TMP/$RESULTS/allResidues.tsv
+      echo "$msa1 $msa2 $colA $realA $colB $realB $seq1 $seq2 $gblscore1 $gblscore2 $roundPerGapA $roundPerGapB $roundDivResA $roundDivResB $corrT $corr $normC $boot $p_value $bonferroni $holm $bh $hochberg $hommel $by" >> $TMP/$RESULTS/allResidues.tsv
     done
     sed -i "1i idA idB colA realA colB realB seqA seqB gblAB GapsAB DivsAB corrT corr normC boot p_value bonferroni holm bh hochberg hommel by" bothWays-corrected-columns.tsv
   elif [ ! -d "$coevPair" ]; then
@@ -313,7 +313,7 @@ extract_columns_stats(){
 cd ..
 }
 
-# Generate and export column statistics
+# Generate and export column statistics, needed for "allProteins.tsv"
 protein_pairs_stats() {
   local coevPair="${1}"
 
@@ -454,7 +454,7 @@ summary_cleanup(){
       sed -i "s/$idxml/$namexml $idxml/g" $TMP/$RESULTS/allResidues.tsv
       sed -i "s/$idxml/$namexml $idxml/g" $EOUT
     done
-    sed -i "1i NameA idA NameB idB colA realA colB realB seqA seqB GblAB GapsAB DivsAB corrT corr normC boot p_value bonferroni holm bh hochberg hommel by" $TMP/$RESULTS/allResidues.tsv
+    sed -i "1i NameA idA NameB idB colA realA colB realB seqA seqB GblA GblB GapA GapB DivA DivB corrT corr normC boot p_value bonferroni holm bh hochberg hommel by" $TMP/$RESULTS/allResidues.tsv
     sed -i \
     "1i NameA idA NameB idB coevThr averR averSigR totCompar sitesCountA sitesCountB sitesUnique sitesComp gblocksMIN gblocksMAX gblocksMEAN GapsMIN GapsMAX GapsMEAN DivsMIN DivsMAX DivsMEAN cCoevMIN cCoevMAX cCoevMEAN bootMIN bootMAX bootMEAN p_valueMIN p_valueMAX p_valueMEAN BonferroniMIN BonferroniMAX BonferroniMEAN HolmMIN HolmMAX HolmMEAN bhMIN bhMAX bhMEAN HochbergMIN HochbergMAX HochbergMEAN HommelMIN HommelMAX HommelMEAN byMIN byMAX byMEAN chiboth_fin" \
     $EOUT
