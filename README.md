@@ -8,7 +8,7 @@ AutoCoEV
 
 Virtual machine image of CRUX 3.6.1 with everything preinstalled is available here:
 
-* [https://seafile.utu.fi/library/832bfcd0-1c4f-4f09-b24b-fd1d61a9e221/autocoev/](autocoev-crux-3.6.1-20220307.ova)
+* [autocoev-crux-3.6.1-20220307.ova](https://seafile.utu.fi/library/832bfcd0-1c4f-4f09-b24b-fd1d61a9e221/autocoev/)
 * An OVA VM image with Ubuntu is in preparation
 
 _Petar B. Petrov<sup>1,2*</sup>, Luqman O. Awoniyi<sup>1,2</sup>, Vid Šuštar1<sup>1</sup>, M. Özge Balcı<sup>1,2</sup> and Pieta K. Mattila<sup>1,2</sup>_
