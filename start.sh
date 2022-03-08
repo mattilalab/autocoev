@@ -166,7 +166,6 @@ echo -e "Minimum number of common species in a pair:...\e[92m$MINCOMMONSPCS\e[39
 echo -e "CAPS alpha-value cutoff at runtime:...........\e[92m$ALPHA\e[39m"
 echo -e "CAPS bootstrap value at runtime:..............\e[92m$BOOT\e[39m"
 echo -e "Postrun P-value correlation cutoff:...........\e[92m$PVALUE\e[39m"
-echo -e "Postrun Bonferroni correction cutoff:.........\e[92m$BONFERRONI\e[39m"
 echo -e "\n"
 
 cd $TMP
