@@ -4,12 +4,13 @@ AutoCoEV
 
 **NOTE (7 Mar 2022): An updated manual and virtual machines images will be available very soon! Send any requests to Petar Petrov (pebope ат utu.fi)**
 
-**Update (8 Mar 2022)**
+**Update (9 Mar 2022)**
 
 Virtual machine image of CRUX 3.6.1 with everything preinstalled is available here:
 
 * [autocoev-crux-3.6.1-20220307.ova](https://seafile.utu.fi/library/832bfcd0-1c4f-4f09-b24b-fd1d61a9e221/autocoev/)
 * An OVA VM image with Ubuntu is in preparation
+* An updated manual is in preparation
 
 **Preprint**
 
