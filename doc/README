@@ -1,5 +1,2 @@
 AutoCoEv is a user-friendly computational pipeline for the search of co-
-evolution between hundreds and even thousands of proteins. Driving over
-10 individual programs, with CAPS2 as a key software for co-evolution
-detection, AutoCoEv achieves seamless automation and parallelization of
-the workflow.
+evolution between proteins.
