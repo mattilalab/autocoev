@@ -1,21 +1,19 @@
-AutoCoEV
-
 # AutoCoEv – a high-throughput in silico pipeline for predicting inter-protein co-evolution
 
 **NOTE (7 Mar 2022): An updated manual and virtual machines images will be available very soon! Send any requests to Petar Petrov (pebope ат utu.fi)**
 
 **Update (9 Mar 2022)**
 
-Virtual machine image of CRUX 3.6.1 with everything preinstalled is available here:
+##Virtual machine image of CRUX 3.6.1 with everything preinstalled is available here:
 
 * [autocoev-crux-3.6.1-20220307.ova](https://seafile.utu.fi/d/a8de85062abf4ab68de9/)
 * An OVA VM image with Ubuntu is in preparation
 
-An updated manual is in preparation (first draft ready!):
+##An updated manual is in preparation (first draft ready!):
 
 * [Manual_AutoCoEv.pdf](doc/Manual_AutoCoEv.pdf)
 
-**Preprint**
+##Preprint
 
 * Available at [bioRxiv](https://www.biorxiv.org/content/10.1101/2020.09.29.315374)
 
