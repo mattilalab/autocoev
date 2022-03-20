@@ -2,18 +2,16 @@
 
 **NOTE (7 Mar 2022): An updated manual and virtual machines images will be available very soon! Send any requests to Petar Petrov (pebope ат utu.fi)**
 
-## Virtual machine images with everything preinstalled are available here:
+## Virtual machine image and more:
 
-* CRUX 3.6.1: [autocoev-crux-3.6.1-20220307.ova](https://seafile.utu.fi/d/a8de85062abf4ab68de9/)
-* An OVA VM image with Ubuntu is in preparation
-
-## An updated manual is in preparation (first draft ready!):
-
-* [Manual_AutoCoEv.pdf](doc/Manual_AutoCoEv.pdf)
+* Virtual machine image with everything preinstalled (CRUX 3.6.1): [autocoev-crux-3.6.1-20220307.ova](https://seafile.utu.fi/d/a8de85062abf4ab68de9/)
+* An OVA VM image of Ubuntu will also be prepared
+* Link to the manual: [Manual_AutoCoEv.pdf](doc/Manual_AutoCoEv.pdf)
+* CAPS2 (patched) precompiled static binary: [vCAPS-static-sort](patches/caps-static)
 
 ## Paper
 
-* Published in [Int. J. Mol. Sci. 2022, 23(6), 3351;](https://www.mdpi.com/1422-0067/23/6/3351)
+* Published in International Journal of Molecular Sciences: [Int. J. Mol. Sci. 2022, 23(6), 3351;](https://www.mdpi.com/1422-0067/23/6/3351)
 
 ## Abstract
 _Petar B. Petrov<sup>1,2*</sup>, Luqman O. Awoniyi<sup>1,2</sup>, Vid Šuštar1<sup>1</sup>, M. Özge Balci<sup>1,2</sup> and Pieta K. Mattila<sup>1,2</sup>_
