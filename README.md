@@ -15,7 +15,7 @@ If you need any help with setting up the pipeline (installing the dependencies, 
 
 ## Paper
 
-* Published in **International Journal of Molecular Sciences**: [Int. J. Mol. Sci. 2022, 23(6), 3351;](https://www.mdpi.com/1422-0067/23/6/3351)
+A paper describing AutoCoEv is published in **International Journal of Molecular Sciences**: [Int. J. Mol. Sci. 2022, 23(6), 3351;](https://www.mdpi.com/1422-0067/23/6/3351)
 
 ## Abstract
 _Petar B. Petrov<sup>1,2*</sup>, Luqman O. Awoniyi<sup>1,2</sup>, Vid Šuštar1<sup>1</sup>, M. Özge Balci<sup>1,2</sup> and Pieta K. Mattila<sup>1,2</sup>_
