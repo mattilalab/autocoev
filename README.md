@@ -5,9 +5,11 @@
 ## Virtual machine image and more:
 
 * Virtual machine image with everything preinstalled (CRUX 3.6.1): [autocoev-crux-3.6.1-20220307.ova](https://seafile.utu.fi/d/a8de85062abf4ab68de9/)
-* An OVA VM image of Ubuntu will also be prepared
+* An OVA VM image of Ubuntu will also be prepared, send me an email (pebope ат utu.fi) if you want it right now.
 * Link to the manual: [Manual_AutoCoEv.pdf](doc/Manual_AutoCoEv.pdf)
-* CAPS2 (patched) precompiled static binary: [vCAPS-static-sort](patches/caps-static)
+* Instructions to set up the pipeline on Debian/Ubuntu: [patches/README](patches/)
+* Instructions to patch and build CAPS2 on Debian/Ubuntu: [caps-dynamic](patches/caps-dynamic/)
+* CAPS2 (patched) precompiled static binary: [vCAPS-static-sort](patches/caps-static/)
 
 ## Paper
 
