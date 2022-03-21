@@ -1,6 +1,8 @@
 # AutoCoEv -- A High-Throughput In Silico Pipeline for Predicting Inter-Protein Coevolution
 
-**NOTE (7 Mar 2022): An updated manual and virtual machines images will be available very soon! Send any requests to Petar Petrov (pebope ат utu.fi)**
+## Need help?
+
+If you need any help with setting up the pipeline (installing the dependencies, compiling from source, etc...) or with running AutoCoEv, send an email to Petar Petrov (pebope ат utu.fi).
 
 ## Virtual machine image and more:
 
